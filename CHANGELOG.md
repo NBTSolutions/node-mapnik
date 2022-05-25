@@ -1,1486 +1,1492 @@
-# Mapnik Changelog
+# Changelog
+
+## 4.5.9
+- Image - fix object lifetimes/scopes in relevant async methods (#978)
+- Add persistent Buffer reference to Image to ensure underlying buffer stays in scope (in situations when Image doesn't own underlyling data)
+- Image - update ctor and remove ad-hoc _buffer field
+- Use Napi::EscapableHandleScope in Image::buffer and Image::data
+
+## 4.5.8
+- Upgrade to mapnik@e553f55dc
+  (https://github.com/mapnik/mapnik/compare/c3eda40e0...e553f55dc)
+   - SVG: restore default values in `parse_svg_value` on failure to preserve "viewport/viewBox" logic when using boost > 1.65.1
+   - Upgrade to boost 1.75 + ICU 58.1
+
+## 4.5.6
+- Upgrade node-addon-api (>=v3.1.0)
+- Upgrade to @mapbox/node-pre-gyp >= v1.x
+- Check `std::string` is not-empty before accessing internal data via operator[]
+- Upgrade to mapnik@c3eda40e0
+  (https://github.com/mapnik/mapnik/compare/c6fc956a7...c3eda40e0)
+  - Fixed size value used to `resize` record buffer in csv.input and geojson.input
+       [#4187](https://github.com/mapnik/mapnik/issues/4187)
+  - Disable compiler warning using portable macros
+       [#4188](https://github.com/mapnik/mapnik/issues/4188)
+       [#4189](https://github.com/mapnik/mapnik/issues/4189)
+       [#4194](https://github.com/mapnik/mapnik/issues/4194)
+  - Upgrade travis-ci build environment to use `xenial`
+  - Move to travis-ci.com
+
+## 4.5.5
+- Upgrade to mapnik@c6fc956a7
+  (https://github.com/mapnik/mapnik/compare/26d3084ea...c6fc956a7)
+  - SVG CSS support https://github.com/mapnik/mapnik/pull/4123
+  - Use mapnik::value_integer for `id` type in feature generator
+  - GeoJSON - allow 'null' properties in `Feature` objects [#4177](https://github.com/mapnik/mapnik/issues/4177)
+  - Implement `is_solid` using stdlib <algorithm> `find_if`
+  - Add perfect forwarding in apply_visitor alias
+  - Re-implement feature_json_generator by adapting feature_impl into boost::fusion container and removing use semantic actions (simpler code + boost_1_73 support) [#4143](https://github.com/mapnik/mapnik/issues/4143)
+  - Relax bounding box extracting grammar [#4140](https://github.com/mapnik/mapnik/issues/4140)
+  - mapnik::color - fix operator== [#4137](https://github.com/mapnik/mapnik/issues/4137)
+  - color::swap - add missing premultiplied_ [#4137](https://github.com/mapnik/mapnik/issues/4137)
+  - Add `spacing-offset` option https://github.com/mapnik/mapnik/pull/4132
+  - Add Int32 support for gdal driver
+- Remove `reinterpret_cast` by changing `Napi::Buffer<T>` specialisations
+- Replace bogus Object->Value->Object conversions e.g scope.Escape(napi_value(obj)).ToObject() => scope.Escape(obj) (ref #961)
+- Remove `Escape`from `env.Undefined()` (ref #961)
+- Travis CI: enable clang-format + clang-tidy targets
+
+## 4.5.4
+- Ensure `mapnik.Image` data is valid during `AsyncWorker::Execute()` (ref #960)
+
+## 4.5.3
+- Set default `quality` value for webp format to 80 (ref #957)
+- Fixes utfgrid support (ref #959)
+
+## 4.5.2
+- Fixed default `scale_denominator` value in Map::render(..)` (#952)
+- Set JS objects properties `napi_writable` for backward compatibility with sinon usage (#954)
+
+## 4.5.1
+- Fixed 'scale_denominator' default value in `VectorTile::render(..)`(#952)
+- Fixed wrong arguments order in AsyncComposite + added test (#953)
+
+## 4.5.0
+- Ported to N-API.
+- Now supporting node v14 using a "universal binary" (same binary will be used for all major node versions)
+- Update mapnik@26d3084ea
+- Ported tests from mocha to tape
+- Upgraded to boost 1.73.0
+- Binaries now compiled with clang++ 10.x
+
+## 4.4.0
+
+- Update mapnik@3be9ce8fa
+  (https://github.com/mapnik/mapnik/compare/a0ea7db1a...3be9ce8fa)
+  - SVG renderer fixes  https://github.com/mapnik/mapnik/pull/4113
+  - Add "darkslategray" and "rebeccapurple" named colors (ref: https://drafts.csswg.org/css-color/#typedef-color)
+  - Use std::round (ref:https://en.cppreference.com/w/cpp/numeric/math/round) mapnik@ed194a3
+  - Move 0.5 up/down rounding into rounding expression (via  @lightmare https://github.com/mapnik/mapnik/pull/4113/commits/7f54e947485df0a35e0dab9b5aacea8db2cff88c#r369294323) [#4116](https://github.com/mapnik/mapnik/issues/4116)
+  - SVG: only use reflection of the second control point on the previous command relative to the current point as first control point when both last and prev( NOTE: before last command in AGG logic!) are curve commands. This fixes long outstanding SVG rendering bug aka `Octocat` bug [#4115](https://github.com/mapnik/mapnik/issues/4115)
+  - SVG parser: fix typo (stroke gradient was applied instead if fill gradient) mapnik@1a0b1a1e77
+  - Add support for `scale-factor` parameter - useful for debugging SVG issues (ref #4112)
+  - Don't attempt to rasterize ARCs with very small sweep_angles, just resort to LINETO (#4112)
+  - SVG parser: ix typo in agg_bezier_arc initialisation mapnik@0420b13055
+  - SVG parser: use numeric parser for arc flags mapnik@60a33a9b
+  - SVG parser: parse arc and sweep flags using special single digit parser, numeric `int_` parser was over greedy and didn't handle compact notation produced by svgo (https://github.com/svg/svgo) mapnik@222835e73
+  - Use official colospace HSL/HSV converters from boost source tree (BOOST_VERSION > 1_69) mapnik@7f2c8b756a
+  - Only push new elements to `parenStack` when needed [#4096](https://github.com/mapnik/mapnik/issues/4096)
+  - Use `& mask` for array bounds clipping (provided array size is 2^n) mapnik@1edd3b7a930
+  - Avoid potential out-of-bounds array access (undefined behaviour) + add c++ `C-array` size implementation mapnik@dec6bc095081
+- Update protozero to v1.6.8
+- Update geometry.hpp to v1.0.0
+- Update wagyu to 0.5.0
+- Drop support for Node versions less than 10.
+- Consistent output image size compatible with other SVG libraries (#938)
+
+## 4.3.1
+- Update to mapnik@a0ea7db1a
+  (https://github.com/mapnik/mapnik/compare/da69fdf66...a0ea7db1a)
+  - Accept explicit parameter "application_name" in postgis and pgraster datasources https://github.com/mapnik/mapnik/pull/3984
+  - Use `ST_MakeEnvelope` https://github.com/mapnik/mapnik/pull/3319
+  - postgis.input: always put decimal point in substituted tokens in SQL  https://github.com/mapnik/mapnik/pull/3942
+  - Replace MAPNIK_INIT_PRIORITY workaround
+  - Ensure 'scaling' and `comp-op` stored as enumeration_wrappers + fix image `scaling` property https://github.com/mapnik/mapnik/pull/4066
+  - New raster colorizer mode for Terrain-RGB https://github.com/mapnik/mapnik/pull/4058
+  - mapnik@831e353c5 SVG parser:  better stderr - don't assume fill/stroke ref is a <gradient>, can be a <pattern> also
+  - Adaptive `smooth` https://github.com/mapnik/mapnik/pull/4031
+  - CSS parser - use appropriate storage type for `hue` value (0..320) https://github.com/mapnik/mapnik/issues/4020
+  - mapnik@776fa0d2f True global pattern alignment, fixed local alignment
+  - mapnik@692fc7f10 render_pattern() needs its own rasterizer
+- Remove remaining "SVG parse error" error message headers
 
-A simple log of core changes affecting Mapnik usage.
+## 4.3.0
+- Updated NAN bindings to support node12
+- Added support for `remove_layer` on map object
+- Fixed various resource leaks
+- Remove bogus "SVG parse error" error message header
+
+## 4.2.1
+- Performance improvement in `mapnik.blend` and `mapnik.Image` methods by having it hold the event loop less time and copying less data into buffers
+- Added `Map.remove_layer` method for removing layer from the map.
+
+## 4.2.0
+- `mapnik.Image.resize` will now accept non premultiplied images and return them back as non premultiplied images
+
+## 4.1.0
+- Added `offset_width` and `offset_height` optional parameters to the `mapnik.Image.resize` and `mapnik.Image.resizeSync` methods.
+- Made `mapink.blend()` now accept `mapnik.Image` objects.
+
+## 4.0.2
+- Update to mapnik@da69fdf66
+
+## 4.0.1
+
+- Updated mapnik-vector-tile to fix strange clipping in vector tiles https://github.com/mapnik/node-mapnik/issues/892
+- Added ability to release the underlying buffer from a vector tile when using `getData` method so no memory is copied.
+
+## 4.0.0
+
+- Added support for node v10
+- Stop bundling node-pre-gyp
+- Upgraded to mapnik@a2f5969 (pre-release master)
+  - See https://github.com/mapnik/mapnik/wiki/API-changes-between-v3.0-and-v3.1 for changes
+- Upgraded to protozero@1.6.2 (and also now pulling via submodule)
+- Upgraded to mapnik-vector-tile@2.1.1 (https://github.com/mapbox/mapnik-vector-tile/blob/master/CHANGELOG.md#211)
+- Pass variables to replace tokens in query (https://github.com/mapnik/node-mapnik/pull/809)
+- Changed SVG parsing behavior to respect strict mode, and default to off.
+
+## 3.7.2
+- Upgraded to Mapnik v3.0.20
+
+## 3.7.1
+
+- Mapnik 3.7.0 was not properly published to npm with node-pre-gyp. Releasing again with fix.
+- Fix to `SSE_MATH` flag during building
+
+
+## 3.7.0
+
+Updated to 3.0.18 of mapnik. See [here](https://github.com/mapnik/mapnik/blob/master/CHANGELOG.md).
+
+- Updated to mapnik-vector-tile@1.6.1
+- Removed windows support (https://github.com/mapnik/node-mapnik/issues/848)
+
+## 3.6.2
+
+Updated to 3.0.15 of mapnik. The full changelog for this release is located [here](https://github.com/mapnik/mapnik/blob/master/CHANGELOG.md#3015).
+
+## 3.6.1
+
+Updated for a fix associated with mapnik-vector-tile where images could be requested that would have a width or height of zero resulting
+in exceptions.
+
+Several fixes associated with different mapnik by updating to use 3.0.14. Please see mapnik change log for specifics. In
+general note worthy changes from mapnik include stricter geojson parsing, fixes for raster plugin, fixes to image scaling,
+changing the meaning of filter-factor, and improvements to the the TIFF decoder.
+
+Due to changes in the mapnik core version during this update you should see some changes in the image rescaling of raster and gdal plugin source data. This will definitely change the expected output. This is due to fixes in long standing bugs in the mapnik library.
+
+- Now supporting node v8
+- Updated to mapnik-vector-tile@1.4.0
+- Mapnik minimum version updated to 3.0.14. Does not work with mapnik 3.1.x currently.
+- Fixed tests around zlib compression and decompression when comparing to node's implementation
+- Fixes rare situation of seg faults during mapnik-vector-tile image processing.
+- Corrects the resolution of images in mapnik-vector-tile when using parameters from postgis plugin.
+- Updated to use `font_engine` `instance()` method explicitely, reflecting on changes brought by [3688](https://github.com/mapnik/mapnik/pull/3688)
+
+## 3.6.0
+
+This release has major performance and stability improvements.
+
+The biggest change is the move to https://github.com/mapbox/wagyu for clipping polygons, which is faster and results in more robust results than the previous implementation based off the "clipper" http://www.angusj.com/delphi/clipper.php. The "clipper" was known to hang on very large polygons and could output self-intersecting polygons.
+
+The second largest change is the update of all major C/C++ dependencies. The changelogs for each are listed below. The highlights are 1) the performance improvements in webp 1.6.0, 2) the many crashes fixed in harfbuzz (https://github.com/behdad/harfbuzz/issues/139), and critical security bugs fixed in libpng, libjpeg, and libtiff.
+
+The third most important set of changes were to node-mapnik directly: for performance many functions now can premultiply as part of another async operation (to avoid needing an additional threadpool access for async premultiply - this matters under load when the threadpool may be full since access can block). And many functions that allocate images now protect from extreme allocation that could hang a machine and result in OOM. Additionally the address sanitizer caught several cases of undefined behavior.
+
+- Added support for node v7
+- Updated to 1.3.0 of Mapnik Vector Tile (https://github.com/mapbox/mapnik-vector-tile/blob/master/CHANGELOG.md#130)
+- Removed Angus Clipper and replaced with Wagyu v0.4.2 (https://github.com/mapbox/wagyu)
+- Upgraded to protozero@1.5.1
+- Upgraded to mapnik-vector-tile@1.3.0
+- Changed build system to use mason instead of mapnik-packaging
+- Added docs for Map#queryPoint and Map#queryMapPoint, #701
+- Added docs for plugins
+- Fixed potential abort due to unhandled error in Mapnik when passing invalid image dimensions
+- Now limiting size of image internally allocated for `image.fromSVGBytes` and `image.fromSVG`, #709
+  Default `max_size` is 2046x2046. Pass `max_size` option to customize.
+- Added `max_size` limitation + `premultiply` option to `Image.fromBytes`, #720
+- Optimized `VectorTile.query` to use fewer allocations
+- Fixed potential overflow in `Image.fromSVG`, refs #740
+- Fixed support for generating Vector Tiles at > z30, #730
+- Fixed invalid casts detected by address sanitizer, #739
+- Binaries compiled with clang-3.9 and requiring at least GLIBCXX_3.4.21 from libstdc++ (https://github.com/mapnik/node-mapnik#depends)
+- Binaries updated to use mapnik `v3.0.13`, see [changelog](https://github.com/mapnik/mapnik/blob/master/CHANGELOG.md#3013).
+- Updated dependency versions (also visible in `install_mason.sh`):
+  - jpeg_turbo 1.5.1 (previously 1.5.0 | https://github.com/libjpeg-turbo/libjpeg-turbo/releases/tag/1.5.1)
+  - libpng 1.6.28 (previously 1.6.24 | http://www.libpng.org/pub/png/libpng.html)
+  - libtiff 4.0.7 (previously 4.0.6 | http://www.simplesystems.org/libtiff/v4.0.7.html)
+  - icu 57.1 (previously 56.1 | http://site.icu-project.org/download/57)
+  - proj 4.9.3 (previously 4.9.2 | https://github.com/OSGeo/proj.4/blob/18e6f047af7962a6da4ae3d6122034db4f8fe935/NEWS#L1)
+  - pixman 0.34.0 (no change)
+  - cairo 1.14.8 (previously 1.14.6 | https://www.cairographics.org/news/cairo-1.14.8/)
+  - webp 0.6.0 (previously 0.5.1 | https://chromium.googlesource.com/webm/libwebp/+/v0.6.0)
+  - libgdal 2.1.3 (previously 2.1.1 | https://trac.osgeo.org/gdal/wiki/Release/2.1.3-News)
+  - boost 1.63.0 (previously 1.61.0 | http://www.boost.org/users/history/version_1_63_0.html)
+  - freetype 2.7.1 (previously 2.6.5 | https://sourceforge.net/projects/freetype/files/freetype2/2.7.1/)
+  - harfbuzz 1.4.2 (previously 1.3.0 | https://github.com/behdad/harfbuzz/blob/8568588202dd718b089e43cd6d46f689c706f665/NEWS#L29)
 
-Developers: Please commit along with changes.
+## 3.5.14
 
-For a complete change history, see the git log.
+- Added support for node v6.x
+- Now persisting image buffer in `mapnik.Image.fromBufferSync` to prevent undefined behavior if buffer were to go out of scope (#677)
+- Upgraded to mapnik-vector-tile@1.2.2
+- Upgraded to protozero@1.4.2
+- Added `typeName()` to `mapnik.Geometry`. This returns the GeoJSON type name of a geometry (@davidtheclark).
+- Fixed potential unsigned integer overflow in `mapnik.blend`
+- Binaries compiled with clang-3.8 and now requiring >= GLIBCXX_3.4.21 from libstdc++ (https://github.com/mapnik/node-mapnik#depends)
+- Binaries updated to use mapnik `v3.0.12`, see [changelog](https://github.com/mapnik/mapnik/blob/master/CHANGELOG.md#3012).
+- Binaries updated to use mapnik-packaging@7862fb9:
+ - icu 56.1
+ - boost 1.61.0
+ - sqlite 3140100
+ - freetype 2.6.5
+ - harfbuzz 1.3.0
+ - proj 4.9.2
+ - libpng 1.6.24
+ - libtiff 4.0.6
+ - webp 0.5.1
+ - jpeg-turbo 1.5.0
+ - libpq 9.4.5
+ - cairo 1.14.6
+  - pixman 0.34.0
+ - gdal 2.1.1
+  - expat 2.2.0
+
+## 3.5.13
+
+- Updated to mapnik-vector-tile `1.2.0`, includes a fix for rare decoding situation in vector tiles where a tile would be incorrectly considered invalid.
+- Still using mapnik `v3.0.11`
+
+## 3.5.12
+
+- Fix performance regression when passing raster through vector tile (via upgrade to mapnik-vector-tile@1.1.2)
+- Still using mapnik `v3.0.11`
+
+## 3.5.11
+
+- Fix for numerical precision issue in mapnik vector tile where valid v2 vector tiles would be thrown as invalid
+- Added new exception handling for toGeoJSON
+- Still using mapnik `v3.0.11`
+
+## 3.5.10
+
+- Fix for a segfault in the vector tile clipping library
+- Still using mapnik `v3.0.11`
 
-## 3.1.0
+## 3.5.9
+
+- Updated to mapnik-vector-tile `1.1.0`
+- Automatic updating of vector tiles from v1 to v2 no longer takes place automatically when using `setData` and `addData`.
+- Validation of vector tiles is now optional when using `setData` and `addData`
+- Still using mapnik `v3.0.11`
 
-Released: January 8, 2021
+## 3.5.8
 
-(Packaged from 445438e34)
+- Updated to mapnik-vector-tile `1.0.6` which includes a speedup on simplification for mapnik-vector-tile
+- Still using mapnik `v3.0.11`
 
-* Require c++14 compliant complier (Boost.Geometry `BOOST_VERSION >= 1_75`)
+## 3.5.7
 
-## 3.0.24
+- Fixed a situation where repeated holes on top of each other could result in self intersections in vector tile geometries
+- Improved the speed of vector tile creation by removing unrequired checks in clipper library
+- Fixed a situation in clipper where horizontals could result in invalid self intersections.
+- Prevent intersections outside the clipper from being processed after intersections inside the clipped area as this in very rare situations would cause an intersection.
+- Updated to mapnik `3.0.11`, see [changelog](https://github.com/mapnik/mapnik/blob/master/CHANGELOG.md#3011).
 
-Released: January 5, 2021
+## 3.5.6
 
-(Packaged from be0904fcd)
+- Another set of fixes for clipper where it would produce invalid polygons when creating vector tiles.
+- Fixed another endless loop in clipper around vector tile creation
 
-- Backport support for `BOOST_VERSION >= 1_74`
+## 3.5.5
 
-## 3.0.23
+- Fixed a situation where the clipper would get locked in an endless loop when creating vector tiles.
 
-Released: February 18, 2020
+## 3.5.4
 
-(Packaged from bdb30f47a)
+- Updated the angus clipper with several fixes that solve intersections issues within vetor tile polygons created when using strictly simple
+- Updated version of `mapnik-vector-tile` to `1.0.5` this solves a SEGFAULT that occurs in rare situations when encoding fails
+- Corrected some problems in the documentation
+- Added a new optional arguments `split_multi_features` and `lat_lon` to `mapnik.VectorTile.reportGeometryValidity` and `mapnik.VectorTile.reportGeometryValiditySync` that enables validity checks against the parts of multi geometries individually.
 
-- Complete build system migration to Py3 syntax (4b0bdd8630f6999e5db346fd767a06b8ceba8fb9)
-- Add support for `BOOST_VERSION >= 1_72`
-- gdal.input - add support for int32 pixel types (efc65126db5d51977d6374f9b983fc441f334eb6)
+## 3.5.3 (DEPRECATED - bad package sent to npm)
 
+- Stopped building node v0.12 binaries. Use node v4 or v5 instead if you need node-mapnik binaries.
+- No code changes: Just a rebuild of 3.5.2 but with debug binaries that can be installed with `npm install --debug`
 
-## 3.0.22
+## 3.5.2
 
-Released: January 22, 2019
+- Fixed bug in `mapnik-inspect.js` around using old `parse()` method on vector tiles, updated it to use `mapnik.VectorTile.info`
+- Updated `mapnik-vector-tile` to `1.0.3` fixing issues with non valid vector tiles being created and linking issue in mapnik-vector-tile with latest mapnik library
+- Updated clipper library to fix bug mentioned in `mapnik-vector-tile`
 
-(Packaged from c338cacd7)
+## 3.5.1
 
-- Improved padding calculation for clipping polygons and lines ([#4001](https://github.com/mapnik/mapnik/pull/4001))
-- New option `line-pattern="repeat"` of LinePatternSymbolizer to repeat the pattern in the area given by `stroke-` options ([#4004](https://github.com/mapnik/mapnik/pull/4004))
-- Fixed global and local pattern alignment ([#4005](https://github.com/mapnik/mapnik/pull/4005))
-- SVG patterns are rendered as vectors into PDF or SVG with Cairo backend ([#4012](https://github.com/mapnik/mapnik/pull/4012))
+- Added the `mapnik.VectorTile.info` command that returns an object that inspects buffers and provides information about vector tiles.
+- Updated `mapnik-vector-tile` to `1.0.2`
 
-## 3.0.21
+## 3.5.0
 
-Released: October 8, 2018
+This is a major update and reflects a large number of changes added into node-mapnik due to update of the [Mapbox Vector Tile Specification](https://github.com/mapbox/vector-tile-spec). As part of this the [mapnik-vector-tile library](https://github.com/mapbox/mapnik-vector-tile) was updated to `1.0.0`. Therefore, a large number of interfaces changes have taken place around the `mapnik.VectorTile` object.
 
-(Packaged from 1dbb1d2c1)
+It is important to know that the concept of `width` and `height` have been removed from `mapnik.VectorTile` objects. This is replaced by the concept of `tileSize`. While `width` and `height` were based on the concept of an Image size created from a vector tile, `tileSize` is directly related to the `extent` as defined in the `Layer` of a vector tile. For understanding what the `Layer` and `extent` is please see the [Vector Tile Specification](https://github.com/mapbox/vector-tile-spec/tree/master/2.1#41-layers). This also changed the `buffer_size` arguments that were commonly used in many Vector Tile methods, which was also based on the *Image size*. The vector tile object now contains a `bufferSize` which represents the buffer added to the layer extent in a tile.
 
-#### Core
+Internally, all methods now depend on V2 tiles, however, any V1 tiles that are loaded into a `mapnik.VectorTile` object will **automatically** be updated.
 
-- Fixed compilation with ICU >= 61 (#3963)
-- Fixed bbox reprojection (#3940)
-- SVG: enabled unsupported attributes handling
+Summary of changes:
 
-#### Plugins
+ - `mapnik.VectorTile.addData` now verifies buffers validity and internally updates v1 tiles to v2
+ - `mapnik.VectorTile.addDataSync` now verifies buffers validity and internally updates v1 tiles to v2
+ - `mapnik.VectorTile.setData` now verifies buffers validity and internally updates v1 tiles to v2
+ - `mapnik.VectorTile.setDataSync` now verifies buffers validity and internally updates v1 tiles to v2
+ - `mapnik.VectorTile.addImage` now takes a `mapnik.Image` object rather then a buffer, it also takes optional arguments image_scaling and image_format.
+ - `mapnik.VectorTile.addImageBuffer` replaces the old functionality of of `mapnik.VectorTile.addImage`
+ - Added `mapnik.VectorTile.addImageSync` and made `mapnik.VectorTile.addImage` accept a callback.
+ - Added `mapnik.VectorTile.addImageBufferSync` and made `mapnik.VectorTile.addImageBuffer` accept a callback.
+ - `mapnik.VectorTile.height()` method is removed
+ - `mapnik.VectorTile.width()` method is removed
+ - `mapnik.VectorTile.parse()` method is removed
+ - `mapnik.VectorTile.IsSolid()` method is removed
+ - `mapnik.shutdown()` is removed
+ - Removed the dependency on libprotobuf library
+ - Lowered memory requirements for vector tile creation and vector tile operations.
+ - Duplicate layer names in `mapnik.VectorTile` objects are no longer permitted.
+ - Added new `mapnik.VectorTile.extent()` method which returns the bounding box of a tile in EPSG:3857
+ - Added new `mapnik.VectorTile.bufferedExtent()` method which returns the bounding box including buffer of a tile in EPSG:3857
+ - Added new `mapnik.VectorTile.emptyLayers()` method which returns the name of layers which were not added to a tile during any tile rendering operation.
+ - Added new `mapnik.VectorTile.paintedLayers()` method which returns the name of layers which were considered painted during rendering or layers that contain data.
+ - Added new `mapnik.VetorTile.tileSize` property.
+ - Added new `mapnik.VetorTile.bufferSize` property.
+ - Updated many of the default configuration options on `mapnik.VectorTile` class methods
+ - Removed the concept of `path_multiplier` from the code entirely.
+ - Added optional arguments of `tile_size` and `buffer_size` to `mapnik.VectorTile` constructor.
 
-- GDAL: Fixed several issues with overviews (#3939)
+## 3.4.19
 
+ - Update to mapnik-core 3.0.11 with a fix to unquoted strings
 
-## 3.0.20
+## 3.4.18
 
-Released: April 12, 2018
+ - Fixed decoding bug that assumed tags came before geometries in vector-tile layers
 
-(Packaged from f02c7bcdb)
+## 3.4.17
 
-    - Make max_image_area a datasource parameter for GDAL.
-    - GDAL Driver Overview Fix and Memory Reduction (#3872)
-    - Raster colorizer: check image bounds (#3879)
-    - Removed usage of `typename` in template template declarations (available in c++17) (#3882)
+ - Binaries updated to use v3.0.10 and mapnik-packaging@d6ae1fb
+ - Upgraded to protozero v1.3.0
+ - Fixed invalid usage of `mapbox::variant` that was causing windows compiler crash
 
-## 3.0.19
+Notable Changes in Mapnik v3.0.10 include:
 
-Released: March 06, 2018
+ - A shapefile index now is skipped instead of causing an error to be throw. The shapefile plugin will then
+   proceed by reading without using an index. It is advisable to regenerate the indexes to maintain
+   top performance.
 
-(Packaged from d50562d54)
+Notable changes in the Mapnik SDK include:
 
-    - Backported scaling of precision by polygon size  (#3844)
-    - Backported GRID placement (#3847, #3854, #3855)
-    - Added missing `MAPNIK_DECL` to all `text_placement_` types (7ce142a5aa8e9da5ddd11266a054c1e69052230d)
-    - Fixed invalid memory access if input_buffer size is zero (a602c65354a4b595821d2300f38ebc107d07e2a9)
-    - Fixed handling of an empty polygon in grid_vertex_converter (2f2dcf1eeae71aaa7878f4bc9a39741321f07e68)
-    - Fixed PROJ_LIB detection logic (44f1ae3a6e9e9979d1a93343f40db6cd7dbf51d5)
-    - Default to `icu-config` for obtaining `ICU_DATA` if `u_getDataDirectory fails (2cef98d7f76cdd302afcf15f1c585379537e8f1d)
+ - sqlite 3100000->3110000
+ - libpng 1.6.20->1.6.21
+ - postgres 9.4.5->9.5.1
+ - sparsehash 2.0.2->2.0.3
 
-## 3.0.18
+## 3.4.16
 
-Released: January 26, 2018
+ - Fixed `image.resize` behavior when scaling images with alpha (https://github.com/mapnik/node-mapnik/issues/585)
+ - Binaries updated to use v3.0.9-125-g5e30aee and mapnik-packaging@db696ed
 
-(Packaged from 44ef46c81)
+Notable Changes in Mapnik v3.0.9-125-g5e30aee include:
 
-    - SVG parser - fixed logic for calculating dimensions when `width` and `height` expressed in
-      percentage units (#3812)
-    - New improved `interior` placement algorithm (#3839)
-    - Fixed handling of an empty interior rings in `polygon_vertex_processor` (#3833)
-    - Fixed handling of an empty interior rings in `vertex_adapter' (#3842)(#3838)
-
-## 3.0.17
-
-Released: November 29, 2017
-
-(Packaged from ebdd96c61)
-
-    - Use `Scons 3` as an internal build sytsem + support both Python 2 and 3.
-    - Added glibcxx workaround to support libstdc++-4.8
-
-## 3.0.16
-
-Released: November 16, 2017
-
-(Packaged from 8d7b75e)
-
-    - Added "strict" SVG parsing mode with consistent error handling  and disabled processing of unsupported attributes.
-    - Added support for `<use>` element.
-    - Implemented compile time string literal to integer conversion, to be able to convert large `if/else if/else` statements to `switch`.
-    - WKB reader - pre-allocate optimisations in `multi_polygon` and `geometry_collection`.
-    - Set alpha values in RGBA TIFFs even when `NODATA` value is pesent.
-    - Support building with ICU >= 59.
-    - SCons - added ICU_DATA, PROJ_LIB and GDAL_DATA settings, available via `mapnik-config`
-    - Fixed centroid and interior text placement algorithms (#3771)
-    - Fixed memory leak (#3775)
-    - SVG parser - fixed default gradient vector in linear gradient.
-    - Fixed bounding box collection logic (#3709)
-
-## 3.0.15
-
-Released: June 16, 2017
-
-#### Summary
-
-(Packaged from 6e6cf84)
-
-- Restored `filter_factor` logic in `gdal.input` and added to `raster.input` (#3699)
-   (updated tests https://github.com/mapnik/test-data-visual/commit/fd518f1f512b8aea4ac740c2ce12c249616a291c)
-- Fixed bug related to rows swapping implementation in `tiff_reader` ref #3679
-   (updated visual tests to catch this regression in the future
-      https://github.com/mapnik/test-data-visual/commit/be0ba965cd2240576a8edfca84801cbb7a4832d6)
-- TIFF I/O - port memory mapped based I/O from master
-
-## 3.0.14
-
-Released: June 5, 2017
-
-(Packaged from 2b42e17)
-
-#### Summary
-
-- Fixed problems with high levels of overzooming in the GDAL and raster plugin where data would be slightly offset
-- High levels of overzooming on raster data no longer results in the return of a transparent image.
-- Fixed bug in `mapnik::util::file::data()` (a220bda05d2aa1)
-- TIFF I/O - added support for grey scale multiband images + fixed and made generic `read_stripped` and `read_generic`.
-- shapeindex - return error code when no features can read from shapefile (#3198)
-- Upgrade Scons to `2.5.1`
-- Fixed bug (typo) in `raster_featureset.cpp` (#3696)
-- Made `freetype_engine` singleton again. This allows for better control of its life-time. Original interface is preserved via adding static methods (#3688)
-
-## 3.0.13
-
-Released: February 8, 2017
-
-(Packaged from 2a153c0)
-
-#### Summary
-
-- Unbundle `unifont` font from distribution
-- GeoJSON: improved parsing grammar avoiding temp synthesised attribute (#3507)
-- GeoJSON: expose `num_features_to_query` datasource parameter + unit test (#3515)
-- Fixed intersecting extents in different projections (PR #3525 )
-- Fixed `blur` implementation by taking into account `scale_factor`
-- postgis.input - use 2D box for pgraster bounding box (PR #3551)
-- Fixed GroupSymbolizer PairLayout with 3+ items (#3526)
-- Simplified `hash` implementation (204d30e58d3553278ab6bcda2d4122b0f13f6392)
-- Simplified `mapnik::value` conversion rules (#3570)
-- Changed `render_thunk_list` to `std::list<render_thunk>` (PR #3585)
-- Upgraded to variant `v1.1.5`
-- CSV.input - fixed `blank` line test (8a3a380b3b5c64681f2478b4f0d06f6a907f5eed)
-- GeoJSON - handle empty elements in position grammar (ref #3609)
-- mapnik-index - return failure on invalid bounding box (ref #3611)
-
-## 3.0.12
-
-Released: September 8, 2016
-
-(Packaged from 1d22d86)
-
-#### Summary
-
-- Ensured gdal.input is registered once (refs #3093 #3339 #3340)
-- Fixed `mapnik::util::is_clockwise` implementation to use coordinates relative to the origin and avoid numeric precision issues
-- `mapnik-index` is updated to fail on first error in input (csv)
-- Added `guard` to `get_object_severity` method (ref #3322)
-- Improved `hash` calculation for `mapnik::value` (ref #3406)
-- AGG - made cover `unsigned` to avoid left shift of negative values (ref #3406)
-- Fixed using `scale_factor` in `evaluate_transform(..)`
-- Fixed line spacing logic by applying `scale factor`
-- ~~Fixed `stringify_object/stringify_array` implementations by disabling white space skipping (ref #3419)~~
-- Added geojson unit test for property types/values
-- JSON - added support for object and array type in `json_value` and update `stringifier`
-- GDAL.input - fallback to using `overviews` if present (8e8482803bb435726534c3b686a56037b7d3e8ad)
-- TopoJSON.input - improved and simplified grammer/parser implementation (https://github.com/mapnik/mapnik/pull/3429)
-- GDAL.input - Added support for non-alpha mask band
-- TopoJSON.input - fixed order of ellements limitation (ref #3434)
-- Fixed stroke-width size not included in markers ellipse bounding box (ref #3445)
-- Implemented `char_array_buffer` and removed `boost::iostreams` dependency (2e8c0d36c2237f2815d8004c1b96bad909056eb9)
-- JSON.input - `extract_bounding_box_grammar` - make features optional (ref #3463)
-- Ensure input plugins return `empty_featureset` rather than `nullptr` (feature_ptr())
-- Added support for quantising small (less than 3 pixel) images (ref #3466)
-- Added support for natural logarithm function in expressions (ref #3475)
-- Improved logic determining if certain compiler features are available e.g `inheriting constructors` (MSVC)
-- GeoJSON - corrected quoting in `stringify` objects (ref #3491)
-- GeoJSON - ensured consistent ordering of attribute descriptors (ref #3494)
-- GeoJSON - exposed `num_features_to_query` as datasource paramer (ref #3495)
-- Replaced `boost::mpl::vector<Types...>` with `std::tuple<Types...>` (ref #3503)
-- BuildingSymbolizer - fixed closing segment of polygon in building symbolizer (ref #3505)
-- Update dependencies versions
-- Fixed warnings when compiling with g++5
-- Fixed image swap (ref #3513)
-- Stop bundling testdata in source tarball (ref #3335)
-
-## 3.0.11
-
-Released: April 1, 2016
-
-(Packaged from 8d9dc27)
-
-#### Summary
-
- - Raster scaling: fixed crash and clipping negative pixel values of floating point rasters (https://github.com/mapnik/mapnik/pull/3349)
- - Restored support for unquoted strings in expressions (https://github.com/mapnik/mapnik/pull/3390)
- - [TWKB](https://github.com/TWKB/) support via https://github.com/mapnik/mapnik/pull/3356 (#3355)
- - Visual test runner can render SVG, PDF and Postscript with Cairo renderer (https://github.com/mapnik/mapnik/pull/3418)
- - Scale factor is now applied also to `text-line-spacing` and transforms (https://github.com/mapnik/mapnik/pull/3416)
-
-## 3.0.10
-
-Released: February 25, 2016
-
-(Packaged from 5c0d496)
-
-#### Summary
-
- - The `shapeindex` command now has a `--index-parts` option. When used the index will be bigger
-   but will allow the Shapefile datasource to only parse polygon parts within the query bounds.
- - WARNING: index files generated with this newer Mapnik are invalid for older versions of Mapnik.
- - Any `.index` files accompanying a `.shp` must now be regenerated otherwise
-   it will be skipped. To avoid this problem you can delete the existing `.index` files, or ideally run `shapeindex` to recreate the `.index`. (https://github.com/mapnik/mapnik/pull/3300)
-   The trigger for this change was an optimization that required a new binary format for the shapefile indexes (https://github.com/mapnik/mapnik/pull/3217).
- - Shapeindex - another fix for skipping `null` shapes (#3288)
- - Fixed support for filter expressions starting with `not` (https://github.com/mapnik/mapnik/issues/3017)
- - Ensure `mapped_memory_cache` acts as singleton across shared objects (#3306)
- - Removed miniz support in PNG encoder (#3281)
- - Added `-fvisibility=hidden -fvisibility-inlines-hidden` to default compiler flags
- - Fixed parsing of SVG `PathElement` (https://github.com/mapnik/mapnik/issues/3225)
- - JSON parsing now supports arbitrary (nested) attributes in `geometry`
+ - Compare: https://github.com/mapnik/mapnik/compare/v3.0.9-48-gbb8cd10...v3.0.9-125-g5e30aee
  - Support for rendering `dash-array` in SVGs
- - SVG parser is now stricter (fails is all input is not parsable) (#3251)
+ - SVG parser is now stricter (fails is all input is not parsable)
  - SVG parser now correctly handles optional separator `(,)` between multiple command parts
  - Optimized parsing of `png` format string
  - The `memory_datasource` now dynamically reports correct datasource type (vector or raster)
- - Upgraded `mapbox::variant v1.1.0`
- - Compare: https://github.com/mapnik/mapnik/compare/v3.0.9...v3.0.10
+ - Upgraded `mapbox::variant@272f91c`
+
+Notable changes in the Mapnik SDK include:
+
+ - none
+
+## 3.4.15
+
+ - `vtile.query` now returns WGS84 `x_hit` and `y_hit` values of the nearest point/vertex
+ - Upgraded to nan@2.2.0
+ - Upgraded to mapnik-vector-tile@0.14.4
+
+## 3.4.14
+
+ - Binaries updated to use Mapnik v3.0.9-57-g9494bc1 and mapnik-packaging@039aa0d
+
+Notable Changes in Mapnik v3.0.9-57-g9494bc1 include:
+
+ - Fixed parsing of SVG `PathElement` (https://github.com/mapnik/mapnik/issues/3225)
+
+## 3.4.13
+
+ - BREAKING: shapefile index files must be regenerated if using the
+   node-mapnik binaries which now default to Mapnik `v3.0.9-48-gbb8cd10` (see `Notable Changes in Mapnik` below for details).
+ - Upgraded to node-pre-gyp@0.6.19
+ - Upgraded to mapnik-vector-tile@0.14.2
+   - Fixed premultiplication bug in raster encoding (#170)
+ - Binaries updated to use Mapnik v3.0.9-48-gbb8cd10 and mapnik-packaging@039aa0d
+
+Notable Changes in Mapnik v3.0.9-48-gbb8cd10 include:
+
+ - BREAKING: any `.index` files accompanying a `.shp` must now be regenerated otherwise
+   an error will be throw like `Error: invalid index file`. To avoid this error you can
+   either delete the existing `.index` files, or ideally run `shapeindex` (or [mapnik-shapeindex.js](https://github.com/mapnik/node-mapnik/blob/master/bin/mapnik-shapeindex.js)) to recreate the `.index`.
+   The trigger for this change was an optimization that required a new binary format for the shapefile indexes (https://github.com/mapnik/mapnik/pull/3217). It was a mistake of @springmeyer to bring this into node-mapnik minor release (I'm sorry).
+ - WARNING: index files generated with this newer Mapnik are invalid for older versions of Mapnik.
+ - Compare: https://github.com/mapnik/mapnik/compare/v3.0.9...v3.0.9-48-gbb8cd10
+ - The `shapeindex` command now has a `--index-parts` option
+ - Upgraded mapbox::variant@3ac6e46
+ - JSON parsing now supports arbitrary (nested) attributes in `geometry`
+
+Notable changes in the Mapnik SDK include:
+
+ - Upgrade libpng 1.6.19 -> 1.6.20
+ - Upgrade webp 0.4.4 -> 0.5.0
+ - Upgrade sqlite3 3.9.2 -> 3.10.0
+
+## 3.4.12
+
+ - Exposed `image_scaling` and `image_format` in `vtile.composite` (https://github.com/mapnik/node-mapnik/pull/572)
+   - Default format is now `webp` encoding rather than `jpeg` (to support transparency)
+   - Default scaling is now `bilinear` rather than `near`
+ - Binaries updated to use Mapnik v3.0.9-17-g75cb954 and mapnik-packaging@e29a81e
+
+Notable Changes in Mapnik 3.0.9-17-g75cb954 include:
+
+ - Support arbitrary (nested) attributes in JSON Geometry
+ - Fixed `shapeindex` to avoid creating an index for null shapes
+
+## 3.4.11
+
+ - Expose `mapnik.Geometry.type` https://github.com/mapnik/node-mapnik/issues/562
+ - Travis tests now run against `osx_image: xcode7`
+ - Appveyor tests now run against `nodejs_version: 5.1.0`
+ - Updated nan to `~2.1.0`
+ - Updated node-pre-gyp to `~0.6.16`
+ - Updated npm-windows-upgrade (https://github.com/mapnik/node-mapnik/issues/566)
+ - Binaries updated to use Mapnik v3.0.9 and mapnik-packaging@1aa9705
+
+Notable Changes in Mapnik 3.0.9 include:
+
+ - The `mapnik-index` command now has a `--validate-features` option
+ - CSV - change 'quote' auto-dection logic to handle mixed cases better
+ - Fixed `shapeindex` for 3dpoints (https://github.com/mapnik/mapnik/issues/3184)
+ - Fixed GeoJSON ordering (https://github.com/mapnik/mapnik/issues/3182)
+ - Fixed parsing of empty GeoJSON FeatureCollections (https://github.com/mapnik/mapnik/issues/3167)
+ - Invalid bbox is now instantiated with `std::numeric_limits<T>::max()` (https://github.com/mapnik/mapnik/commit/4d6a735f535c27561bb40567398aba19a88243d4)
+ - Fixed raster scaling/nodata handling (https://github.com/mapnik/mapnik/pull/3147)
+ - For more details see entries for https://github.com/mapnik/mapnik/blob/master/CHANGELOG.md#309
+
+Notable changes in the Mapnik SDK include:
+
+ - Upgrade harfbuzz 1.0.6 -> 1.1.2
+ - Upgrade pixman 0.32.6 -> 0.32.8
+ - Upgrade cairo 1.14.2 -> 1.14.4
+ - Upgrade libxml2 2.9.2 -> 2.9.3
+ - Upgrade postgres 9.4.0 -> 9.4.5
+ - Upgrade libpng 1.6.18 -> 1.6.19
+ - Upgrade icu_version 55.1 -> 56.1
+ - Upgrade icu_version2 55_1 -> 56_1
 
 
+## 3.4.10
 
-## 3.0.9
+ - Now bundling the `mapnik-index` command (https://github.com/mapnik/node-mapnik/pull/545)
+ - Added `process_all_rings`  option to `VectorTile.composite`, `VectorTile.addGeoJSON`, and `Map.render`.
+   This option enables invalid ring to be processed (and potentially kept during re-encoding) when creating vector tiles.
+   By default this is set to `false`. Use with caution.
+ - Added enum for all polygon fill types under `mapnik.polygonFillType`. Options are `nonZero`, `evenOdd`, `positive`,
+   and `negative`
+ - Added `fill_type`  option to `VectorTile.composite`, `VectorTile.addGeoJSON`, and `Map.render`. By default
+   this is set to `mapnik.polygonFillType.nonZero`
+ - Added `multi_polygon_union`  option to `VectorTile.composite`, `VectorTile.addGeoJSON`, and `Map.render`. By
+   default this is set to `true`. This will cause multipolygons to undergo a union operation during vector tile
+   creation.
+ - Added `simplify_distance`  option to `VectorTile.composite`.
+ - Added `max_extent` (bbox) option to `VectorTile.composite`. By default it is unset which means no
+   clipping extent will be used for the operation. If provided the data will be restricted to this extent.
+     - Landed in https://github.com/mapnik/node-mapnik/commit/ef3b12a36f529a1a8fbb70f4ddd6a92e1bd22008
+     - Previously compositing was using a hardcoded global extent of `-20037508.34,-20037508.34,20037508.34,20037508.34` which meant that all vector tile data was being clipped to global extents. This was harmless in all cases except when data contained data outside of global extents intentionally in order to avoid rendering of lines and blurs being visible at tile boundaries.
+ - Added `reencode` (boolean) option to `VectorTile.composite`. If `true` will trigger re-rendering
+   even if the z/x/y of all tiles matches. If `false` (the default) then tiles will be concatenated for
+   best performance.
+ - Updated mapnik-vector-tile to `v0.14.1`
+ - Binaries updated to use Mapnik v3.0.9-rc2 and mapnik-packaging@6f2f178
 
-Released: November 26, 2015
+Notable Changes in Mapnik 3.0.9-rc2/3.0.8 include:
 
-(Packaged from 03a0926)
+ - Improved support for natural earth shapefiles
+ - Improved CSV and JSON parsing and error handling
+ - Stricter GeoJSON parsing in geojson.input (https://github.com/mapnik/mapnik/issues/3125)
+ - For more details see entries for https://github.com/mapnik/mapnik/blob/master/CHANGELOG.md#308 and https://github.com/mapnik/mapnik/blob/master/CHANGELOG.md#309
 
-#### Summary
+Notable changes in the Mapnik SDK include:
+ - Upgrade freetype 2.6 -> 2.6.1
+ - Upgrade proj 4.8.0 -> 4.9.2
+ - Upgrade png 1.6.17 -> 1.6.18
+ - Upgrade tiff 4.0.4 -> 4.0.6
+ - Upgrade jpeg-turbo 1.4.1 -> 1.4.2
+ - Upgrade GDAL 2.0.0 -> 2.0.1
+ - Upgrade Harfbuzz 0.9.41 -> 1.0.6
+ - Upgrade sqlite 3.8.10.2 -> 3.9.2
+ - Upgrade webp 0.4.3 -> 0.4.4
 
- - Fixed offsetting of complex paths and sharp angles (https://github.com/mapnik/mapnik/pull/3160) (via @winni159)
- - Fixed mapnik.util.variant issue when compiling with gcc-5.x and SSO enabled by default (https://github.com/mapnik/mapnik/issues/3103) (via @nkovacs)
- - Fixed issue with complex scripts where some character sequences weren't rendered correctly (https://github.com/mapnik/mapnik/issues/3050) (via @jkroll20)
- - Revived postgis.input tests
- - JSON: geometry grammar has been re-factored and optimized to have expectation points
- - Filled missing specializations for value_bool in `mapnik::value` comparison operators
- - `mapnik.Image` - fixed copy semantics implementation for internal buffer
- - JSON parsing: unified error_handler across all grammars
- - Improved unit test coverage
- - Raster scaling: fixed nodata handling, accuracy when working with small floats and clipping floats by \[0; 255\] (https://github.com/mapnik/mapnik/pull/3147)
- - Added [`code of conduct`](http://contributor-covenant.org)
- - GeoJSON plug-in is updated to skip feature with empty geometries
- - GeoJSON plug-in : ensure original order of features is preserved (fixed) (https://github.com/mapnik/mapnik/issues/3182)
- - Shapeindex utility: fixed `empty` shapes handling and ported tests to c++
- - Centroid algorithm: fixed invalid input handling, particularly empty geometries (https://github.com/mapnik/mapnik/pull/3185)
- - Updated SCons build system to the latest version 2.4.1 (http://scons.org/)
+## 3.4.9
 
-## 3.0.8
+ - Updated to use mapnik-vector-tile `0.13.0`
+ - Linestrings will no longer contain repeated points when vector tiles are created
+ - Added a new method called `decode_geometry` as an optional argument to `toJSON` for `mapnik.VectorTile` object
+   this option provides decoded geometry in the raw form from the vector tile.
+ - Updated to use a more recent version of the angus clipper library.
+ - Binaries updated to use Mapnik v3.0.7 and mapnik-packaging@9606f72ef0
 
-Released: October 23, 2015
+Notable Changes in Mapnik 3.0.7 include:
 
-(Packaged from 2d15567)
+ - Fixed bugs in the PostGIS `key_field_as_attribute` behavior
 
-#### Summary
+Notable changes in the Mapnik SDK include:
+ - Upgrade cairo 1.12.18 -> 1.14.2
+ - Upgrade boost 1.58 -> 1.59
 
- - Renamed `SHAPE_MEMORY_MAPPED_FILE` define to `MAPNIK_MEMORY_MAPPED_FILE`. Pass `./configure MEMORY_MAPPED_FILE=True|False` to request
-   support for memory mapped files across Mapnik plugins (currently shape, csv, and geojson).
- - Unified `mapnik-index` utility supporting GeoJSON and CSV formats
- - Increased unit test coverage for GeoJSON and CSV plugins
- - shape.input - re-factor to support *.shx and improve handling various bogus shapefiles
- - geojson.input - make JSON parser stricter + support single Feature/Geometry as well as FeatureCollection
- - maintain 'FT_LOAD_NO_HINTING' + support >= harfbuzz 1.0.5
- - geojson.input - implement on-disk-index support
+## 3.4.8
 
-## 3.0.7
+ - Now supporting Node v4.x
+ - The `new mapnik.Palette` constructor no longer accepts a string - please pass a correctly encoded buffer.
+ - Added `reportGeometrySimplicity` and `reportGeometryValidity` to `mapnik.VectorTile`. These check if the geometry in the vector tile is OGC simple or valid.
+ - Added `strictlySimple` option when creating vector tiles.
+ - Updated to use mapnik-vector-tile `0.12.0`
 
-Released: October 12, 2015
+Notable Changes in Mapnik 3.0.5 include:
+ - PostGIS plugin: added `key_field_as_attribute` option. Defaults to `True` to preserve current behavior of having the `key_field` added both
+   as an attribute and as the `feature.id` value. If `key_field_as_attribute=false` is passed then the attribute is discarded (https://github.com/mapnik/mapnik/issues/3115)
+ - CSV plugin has been further optimized and has gained experimental support for on-disk indexes (https://github.com/mapnik/mapnik/issues/3089)
+ - SVG parser now fallsback to using `viewbox` if explicit dimensions are lacking (https://github.com/mapnik/mapnik/issues/3081)
+ - Fixed parsing colors in hexadecimal notation (https://github.com/mapnik/mapnik/pull/3075)
 
-(Packaged from e161253)
+## 3.4.7
 
-#### Summary
+ - Rebuilt with Mapnik 3.0.5
+ - Added ability to create an image using a Buffer object. It should be noted that this should
+   be used very carefully as the lifetime of the Image object is tied to that of the Buffer. If the
+   buffer object is garbage collect this could result in a segfault.
 
- - Removed `MAPNIK_VERSION_IS_RELEASE` define / `mapnik-config --version` not longer reports `-pre` for non-release versions.
-   Use `mapnik-config --git-revision` instead (https://github.com/mapnik/mapnik/issues/3123)
- - Renamed `nik2img` command to `mapnik-render`
- - PostGIS: Fixed handling of all attributes when `key_field_as_attribute=false` (https://github.com/mapnik/mapnik/issues/3120)
- - PostGIS: Fixed parsing of `key_field_as_attribute` as boolean: now `true/false` can be used in addition to `0/1`
+Notable Changes in Mapnik 3.0.5 include:
 
-## 3.0.6
+ - `scale-hsla` image filter: parameters are no longer limited by interval \[0, 1\] (https://github.com/mapnik/mapnik/pull/3054)
+ - Windows: Fixed SVG file loading from unicode paths
+ - `colorize-alpha` image filter: fixed normalization of color components (https://github.com/mapnik/mapnik/pull/3058)
+ - `colorize-alpha` image filter: added support for transparent colors (https://github.com/mapnik/mapnik/pull/3061)
+ - Enable reading optional `MAPNIK_LOG_FORMAT` environment variable(https://github.com/mapnik/mapnik/commit/6d1ffc8a93008b8c0a89d87d68b59afb2cb3757f)
+ - CSV.input uses memory mapped file by default on *nix.
+ - Updated bundled fonts to the latest version
+ - Topojson.input - fixed geometry_index logic which was causing missing features
+ - Fixed SVG file loading from unicode paths (https://github.com/mapnik/node-mapnik/issues/517)
+ - CSV.input - improved support for LF/CR/CRLF line endings on all platforms (https://github.com/mapnik/mapnik/issues/3065)
 
-Released: October 7, 2015
+## 3.4.6
 
-(Packaged from 3cebe97)
+ - Enhanced `vtile.setData` and `vtile.getData` to have async signatures if callback passed as last argument.
+ - Enhanced `vtile.setData` to accept gzip and zlib compressed data.
+ - Enhanced `vtile.getData` to accept options to gzip compress data before returning buffer like `vtile.getData({compression:'gzip'})`
+ - Rebuilt with 0.10.0 of Mapnik Vector Tile. This changes the way that `painted` method returns in `VectorTile` classes.
+ - In `VectorTile` object `parse` is no longer required please consider it depreciated.
+ - `VectorTile` now utilizes the protozero library for lower memory vector tile operations.
 
-#### Summary
+## 3.4.5
 
-- PostGIS plugin: added `key_field_as_attribute` option. Defaults to `True` to preserve current behavior of having the `key_field` added both
-  as an attribute and as the `feature.id` value. If `key_field_as_attribute=false` is passed then the attribute is discarded (https://github.com/mapnik/mapnik/issues/3115)
-- CSV plugin has been further optimized and has gained experimental support for on-disk indexes (https://github.com/mapnik/mapnik/issues/3089)
-- SVG parser now fallsback to using `viewbox` if explicit dimensions are lacking (https://github.com/mapnik/mapnik/issues/3081)
-- Visual tests: new command line arguments `--agg`, `--cairo`, `--svg`, `--grid` for selecting renderers (https://github.com/mapnik/mapnik/pull/3074)
-- Visual tests: new command line argument `--scale-factor` or abbreviated `-s` for setting scale factor (https://github.com/mapnik/mapnik/pull/3074)
-- Fixed parsing colors in hexadecimal notation (https://github.com/mapnik/mapnik/pull/3075)
-- Removed mapnik::Feature type alias of mapnik::feature_impl (https://github.com/mapnik/mapnik/pull/3099)
-- Fixed linking order for plugins to avoid possible linking errors on linux systems (https://github.com/mapnik/mapnik/issues/3105)
+ - Rebuilt against Mapnik 3.0.4
+
+Notable changes in Mapnik SDK include:
+
+ - CSV.input: plug-in has been refactored to minimise memory usage and to improve handling of larger input.
+   (NOTE: [large_csv](https://github.com/mapnik/mapnik/tree/large_csv) branch adds experimental trunsduction parser with deferred string initialisation)
+ - CSV.input: added internal spatial index (boost::geometry::index::tree) for fast `bounding box` queries (https://github.com/mapnik/mapnik/pull/3010)
+ - Fixed deadlock in recursive datasource registration via @zerebubuth (https://github.com/mapnik/mapnik/pull/3038)
+
+## 3.4.4
+
+ - Rebuilt against updated Mapnik SDK to fix mysterious zlib related build issue.
+
+## 3.4.3
+
+ - Upgrade to mapnik-vector-tile@0.9.2
+ - Added `Image.filter` and `Image.filterSync` to filter images.
+ - Binaries updated to use Mapnik v3.0.3
+ - Upgrade to mapnik-vector-tile@0.9.3
+   - Fixed multipoint encoding
+   - Optimized geometry decoding
+
+Notable changes in the Mapnik SDK include:
+
+ - Fixed an issue with fields over size of `int32` in `OGR` plugin (https://github.com/mapnik/node-mapnik/issues/499)
+ - Added 3 new image-filters to simulate types of colorblindness (`color-blind-protanope`,`color-blind-deuteranope`,`color-blind-tritanope`)
+ - Fix so that null text boxes have no bounding boxes when attempting placement ( 162f82cba5b0fb984c425586c6a4b354917abc47 )
+ - Patch to add legacy method for setting JPEG quality in images ( #3024 )
+ - Added `filter_image` method which can modify an image in place or return a new image that is filtered
+ - Added missing typedef's in `mapnik::geometry` to allow experimenting with different containers
+
+## 3.4.2
+
+ - Added `Image.fromSVG`, `Image.fromSVGBytes` and the equivilent Sync functions for each
+ - Binaries updated to use Mapnik v3.0.2 and mapnik-packaging@049968d24
+
+Notable changes in the Mapnik SDK include:
+
+ - Added container to log SVG parsing errors
+ - Reimplemented to use rapidxml for parsing XML (DOM)
+ - Support both xml:id and id attributes ( xml:id takes precedence )
+ - Added parse_id_from_url using boost::spirit
+ - Added error tracking when parsing doubles
+ - Unit tests for svg_parser to improve coverage
+ - Fixed rx/ry validation for rounded_rect
+ - Fixed dimensions parsing
+ - Remove libxml2 dependency
+
+## 3.4.1
+
+ - Installing like `npm install mapnik --toolset=v140` now installs windows binaries built
+   with Visual Studio 2015 (rather than 2014 CTP4)
+ - Added support for `buffer_size` in `addGeoJSON` (#457)
+ - Fixed bug in `render` method of VectorTile where invalid parameters could cause a segfault.
+ - Added `mapnik.Image.resize` method that enables images to be resized.
+ - Now setting `VRT_SHARED_SOURCE=0` (#437)
+ - Removed usage of `V8::AdjustAmountOfExternalAllocatedMemory` in `mapnik.Image` and `mapnik.Grid` (#136)
+ - Upgraded to node-pre-gyp@0.6.9
+ - Upgrade to mapnik-vector-tile@0.8.5
+   - Updated vector tile clipping so that it throws out polygons outside bbox of tile
+ - Binaries updated to use Mapnik v3.0.1 and mapnik-packaging@049968d24
+
+Notable changes in the Mapnik SDK include:
+
+ - Update gdal 1.11.2->2.0.0
+ - Update freetype 2.5.5->2.6
+ - Update harfbuzz 0.9.40->0.9.41
+ - Changed the offset algorithm such that offsets now will always be positive to the left of the direction of the path
+ - Increased performance of text rendering
+ - Fixed text placement performance after #2949 (#2963)
+ - Fixed rendering behavior for text-minimum-path-length which regressed in 3.0.0 (#2990)
+ - Fixed handling of xml:id in SVG parsing (#2989)
+ - Fixed handling of out of range rx and ry in SVG rect (#2991)
+ - Fixed reporting of envelope from mapnik::memory_datasource when new features are added (#2985)
+ - Fixed parsing of GeoJSON when unknown properties encountered at FeatureCollection level (#2983)
+ - Fixed parsing of GeoJSON when properties contained {} (#2964)
+ - Fixed potential hang due to invalid use of line-geometry-transform (6d6cb15)
+ - Moved unmaintained plugins out of core: osm, occi, and rasterlite (#2980)
+
+## 3.4.0
+
+ - `mapnik.imageType` is now passed in options to new mapnik.Image
+ - Upgrade to mapnik-vector-tile@0.8.4
+  - Fixes support for decoding known degenerate polygons (from AGG clipper)
+  - Fixes support for handling data in alternative projections
+  - Fixes support for geometry collections
+  - Fixes support for skipping out of range coordinates to avoid aborting polygon clipping
+  - Includes fixes to clipper to avoid aborting on out of range coordinates
+  - Fixed support for gracefully handling proj4 transformation errors
+ - Upgraded to node-pre-gyp@0.6.7
+ - Binaries updated to use Mapnik v3.x (master branch) at 39eab41 and mapnik-packaging@3ab051556e
+
+Notable changes in the Mapnik SDK include:
+
+ - Fixed potential crash when rendering metatiles to webp
+ - Now throws on missing style when loading map in strict mode
+ - Now handling when proj4 returns HUGE_VAL
+ - Fixed crash when jpeg reader is used to open a png
+ - Fixed gamma pollution for dot symbolizer
+ - Purged usage of `boost::ptr_vector` and `boost::unordered_map`
+ - Support for GDAL 2.0
+ - Update boost 1.57.0->1.58.0
+ - Update icu 1.54.1->1.55.1
+ - Update sqlite 3.8.8.2->3.8.10.2
+ - Update png 1.6.16->1.6.17
+ - Update tiff 4.0.4beta->4.0.4
+ - Update jpeg-turbo 1.4.0->1.4.1
+
+## 3.3.0
+ - Ugraded to Mapnik 3.x version with totally new geometry storage
+ - Upgrade to mapnik-vector-tile@0.8.0
+ - Upgraded to node-pre-gyp@0.6.5
+ - Added an additional parameter to Projection initialization. This prevents the initialization
+   of a proj4 object internally. This will only be useful when reprojecting from epsg:4326 to
+   epsg:3857 and vise versa.
+ - Binaries updated to use Mapnik v3.x (master branch) at 126c777.
+
+## 3.2.0
+ - Added support for a variety of different grayscale images and `mapnik.imageType` list
+   - `mapnik.imageType.null`
+   - `mapnik.imageType.rgba8`
+   - `mapnik.imageType.gray8`
+   - `mapnik.imageType.gray8s`
+   - `mapnik.imageType.gray16`
+   - `mapnik.imageType.gray16s`
+   - `mapnik.imageType.gray32`
+   - `mapnik.imageType.gray32s`
+   - `mapnik.imageType.gray32f`
+   - `mapnik.imageType.gray64`
+   - `mapnik.imageType.gray64s`
+   - `mapnik.imageType.gray64f`
+ - Added the ability to return colors optionally with `getPixel` on `Image` objects
+ - Added new constructors for `Color` object
+ - Added the concept of premultiplied to `Image` and `Color` objects
+ - `Image` objects no longer have a `background` property
+ - Added `fill` and `fillSync` methods to `Image` objects to replace `background` property
+ - Added `imageCopy` to copy an image into a new image type
+ - `Image` `rgba8` objects are not automatically premultiplied prior to using `composite` operation
+ - Added image view support for all new grayscale image types
+ - Modified tolerance option on `query` and `queryMany` to only include features within that tolerance into the vector tile.
+ - Modified the `renderSync` method on the `Map` object to only take an optional parameters object. Format can still be set by passing format as a optional argument. This was done so that it mirrors `renderFileSync`. The default format if none is provide is 'png'
+ - Changed name of method `hsl2rgb2` to `hsl2rgb`
+ - Changed name of method `rgb2hsl2` to `rgb2hsl`
+ - Removed format parameter from `Grid` and `GridView` objects `encode` and `encodeSync` methods as it had no affect.
+ - Added `active`, `queryable`, `clear_label_cache`, `minzoom`, and `maxzoom` property to `Layer` objects
+ - Added `compositeSync` to `VectorTile` object.
+ - Changed `composite` in `VectorTile` to accept a callback
+ - Upgraded to nan@1.7.0 and mapnik-vector-tile@0.7.1
+ - Changed boolean on `Parameters` for `Map` object such that 1 and 0 are no longer boolean but integers.
+ - Binaries updated to use Mapnik v3.x (master branch) at 3270d42b74821ac733db169487b5cd5d5748c1e6 and mapnik-packaging@6638de9b5b
+
+Notable changes in the Mapnik SDK include:
+ - Changes: https://github.com/mapnik/mapnik/compare/30c6cf636c...5a49842952
+ - Mapnik TopoJSON plugin now supports optional `bbox` property on layer
+ - Various improvements to Mapnik pgraster plugin
+ - Mapnik GDAL plugin now keeps datasets open for the lifetime of the datasource (rather than per featureset)
+ - Mapnik GDAL plugin now has optimized nodata handling for RGB images.
+ - Mapnik no longer calls `dlclose` on gdal.input (mapnik/mapnik#2716)
+ - Upgraded Clipper to v6.2.8 / svn r492.
+ - Upgraded libtiff to 4.0.4beta
+ - Upgraded libjpeg-turbo to 1.4.0
+ - Upgraded GDAL to 1.11.2
+ - Upgraded harfbuzz to 0.9.38
+
+## 3.1.6
+
+ - Now supporting IO.js 1.x and Node v0.12.x
+ - Optimized `vtile.addGeoJSON` by switching to Mapnik native GeoJSON plugin internally rather than OGR.
+ - Upgraded to node-pre-gyp@0.6.4
+
+## 3.1.5
+
+ - Security Fix: now throwing error instead of abort when vtile.getData() is called which needs to produce a node::Buffer larger than node::Buffer::kMaxLength (bed994a). However this condition did not previously happen due to integer overflow which is now also fixed (#371)
+ - Now handling C++ exceptions in vt.composite to prevent possible abort (although none could be replicated)
+ - Removed nik2img from binary packages (not useful since it duplicates ./bin/mapnik-render.js)
+ - Added stress test benchmarks that live in ./bench folder of git repo
+ - Added `isSolid` method to `Image` object
+ - When making vector tiles that are larger then 64 MB changed node so that it would no longer through an abort but rather an exception
+ - Added extra meta data for some datasource associated with the use of the `describe` method on datasources
+
+Notable changes in the Mapnik SDK include:
+ - Changes: https://github.com/mapnik/mapnik/compare/8063fa0...30c6cf636c
+ - `shapeindex` now works properly for point 3d shapes
+ - Improved auto-detection of `geometry_table` from sql subselects for PostGIS plugin
+ - Fixed hextree encoder (will produce non-visible image differences)
+ - Fixed bugs in GeoJSON parser
+ - GroupSymbolizer now supports MarkersSymbolizer and not PointSymbolizer
+
+## 3.1.4
+
+ - Fixed bugs in `VectorTile.toGeoJSON` to ensure properly formatted JSON output.
+ - Cleanup of Javascript code and tests using JSLint.
+ - Added preliminary support for building against Nan v1.5.0 and IO.js v1.0.1 (but still using Nan v1.4.1 for the time being)
+ - Added `mapnik.versions.mapnik_git_describe` to get access to the git details of the Mapnik version node-mapnik was built against.
+ - Fixed `mapnik-inspect.js` script.
+ - Binaries updated to use Mapnik v3.x (master branch) at 8063fa0 and mapnik-packaging@0cc6382
+
+Notable changes in the Mapnik SDK include:
+ - Changes: https://github.com/mapnik/mapnik/compare/1faaf595...8063fa0
+ - Fixed marker properties to not override svg `fill:none` or `stroke:none`, which avoids unintended colorization of svg symbols
+ - Added support for `text-transform:reverse`
+ - Fixed utf8 output in json properties grammar
+ - Upgraded to latest [Mapbox Variant](https://github.com/mapbox/variant)
+ - Upgrade freetype 2.5.4 -> 2.5.5
+ - Upgrade libpng 1.6.15 -> 1.6.16
+ - Upgrade cairo 1.12.16 -> 1.12.18
+ - Still pinned to harfbuzz 7d5e7613ced3dd39d05df83c
+
+## 3.1.3
+
+ - Now vt.composite `buffer-size` defaults to `1` instead of `256` and `tolerance` defaults to `8` instead of `1`.
+ - Improvements to internals of mapnik.blend
+ - Fixed rare error when reading image data with the async `mapnik.Image.fromBytes`
+ - Binaries updated to use Mapnik v3.x (master branch) at 1faaf595 and mapnik-packaging@5a436d45e3513
+
+Notable changes in the Mapnik SDK include:
+
+ - New and experimental `dot` symbolizer.
+ - GeoJSON/TopoJSON plugin now returns correct ids even if rendered twice.
+ - `font-feature-settings` is now respected per text item.
+ - image_data internals were refactored.
+ - Ignore overviews with 0 scale in pgraster (@rafatower)
+ - Fixed support for handling all SQLite columns (@StevenLooman)
+ - Upgrade libpng 1.6.14->1.6.15
+ - Upgrade freetype 2.5.3->2.5.4
+ - Upgrade sqlite 3080701->3080704
+ - Upgrade postgres 9.3.4->9.4.0
+ - Upgrade openssl 1.0.1i->1.0.1j
+ - Upgrade harfbuzz 0.9.35->0.9.37/7d5e7613ced3dd39d05df83ca7e8952cbecd68f6
+
+## 3.1.2
+
+ - Now providing 32 bit windows binaries in addition to 64 bit
+
+## 3.1.1
+
+ - Added `Map.registerFonts()`
+ - Upgraded to node-pre-gyp@0.6.1
+ - Aliased `mapnik.register_fonts()` -> `mapnik.registerFonts()`, `mapnik.register_datasources()` -> `mapnik.registerDatasources()`.
+ - Binaries updated to use Mapnik v3.x (master branch) at 2577a6c and mapnik-packaging@759c4a32ba
+
+## 3.1.0
+
+ - Added [`mapnik.Logger`](https://github.com/mapnik/node-mapnik/blob/master/docs/Logger.md)
+ - Added `Map.loadFonts`, `Map.fonts()`, `Map.fontFiles()`, `Map.fontDirectory()`, and `Map.memoryFonts()`
+ - Added `Feature.fromJSON` and `Feature.geometry`
+ - Added `Geometry.toJSON`
+ - Removed: `Feature.numGeometries`, `Feature.addAttributes`, and `Feature.addGeometry`
+ - BREAKING: `VectorTile.toGeoJSON` now returns a string
+ - `VectorTile.toGeoJSON` now supports multigeometries and is async if callback is passed
+ - Dropped build dependency on pkg-config (protobuf headers and libs are assumed to be installed at paths reported by mapnik-config)
+ - Upgraded Nan to v1.4.0
+ - Upgraded to mapnik-vector-tile@v0.6.1
+ - Binaries updated to use Mapnik v3.x (master branch) at bff4465 and mapnik-packaging@fdc5b659d4
+
+Notable changes in binaries:
+
+ - Restored support for OS X 10.8
+
+Notable changes in the Mapnik SDK include:
+ - GDAL updated to 0334c2bed93f2
+ - ICU 53.1 -> 54.1
+ - xml2 2.9.1 -> 2.9.2
+ - webp 0.4.0 -> 0.4.2
+ - libpng 1.6.13 -> 1.6.14
+ - sqlite 3.8.6 -> 3.8.7.1
+ - boost 1.56 -> 1.57
+ - protobuf 2.5.0 -> 2.6.1
+
 
 ## 3.0.5
 
-Released: September 16, 2015
-
-(Packaged from 165c704)
-
-#### Summary
-
-- `scale-hsla` image filter: parameters are no longer limited by interval \[0, 1\] (https://github.com/mapnik/mapnik/pull/3054)
-- Windows: Fixed SVG file loading from unicode paths
-- `colorize-alpha` image filter: fixed normalization of color components (https://github.com/mapnik/mapnik/pull/3058)
-- `colorize-alpha` image filter: added support for transparent colors (https://github.com/mapnik/mapnik/pull/3061)
-- Enable reading optional `MAPNIK_LOG_FORMAT` environment variable(https://github.com/mapnik/mapnik/commit/6d1ffc8a93008b8c0a89d87d68b59afb2cb3757f)
-- CSV.input uses memory mapped file by default on *nix.
-- Updated bundled fonts to the latest version
-- Topojson.input - fixed geometry_index logic which was causing missing features
-- Fixed SVG file loading from unicode paths (https://github.com/mapnik/node-mapnik/issues/517)
-- CSV.input - improved support for LF/CR/CRLF line endings on all platforms (https://github.com/mapnik/mapnik/issues/3065)
-- Revive `zero allocation image interface` and add unit tests
-- Benchmark: use return values of test runner.
+ - Binaries updated to use Mapnik v3.x (master branch) at b90763469a and mapnik-packaging@f9e1c81b39
+ - shapeindex and nik2img are now bundled
 
 ## 3.0.4
 
-Released: August 26, 2015
-
-(Packaged from 17bb81c)
-
-#### Summary
-
-- CSV.input: plug-in has been re-factored to minimise memory usage and to improve handling of larger input.
-  (NOTE: [large_csv](https://github.com/mapnik/mapnik/tree/large_csv) branch adds experimental trunsduction parser with deferred string initialisation)
-- CSV.input: added internal spatial index (boost::geometry::index::tree) for fast `bounding box` queries (https://github.com/mapnik/mapnik/pull/3010)
-- Fixed deadlock in recursive datasource registration via @zerebubuth (https://github.com/mapnik/mapnik/pull/3038)
-- Introduced new command line argument `--limit` or `-l` to limit number of failed tests via @talaj (https://github.com/mapnik/mapnik/pull/2996)
+ - Binaries updated to use Mapnik v3.x (master branch) at 6b1c4d00e5 and mapnik-packaging@f9ec0f8d95
 
 ## 3.0.3
 
-Released: August 12, 2015
-
-(Packaged from 3d262c7)
-
-#### Summary
-
-- Fixed an issue with fields over size of `int32` in `OGR` plugin (https://github.com/mapnik/node-mapnik/issues/499)
-- Added 3 new image-filters to simulate types of colorblindness (`color-blind-protanope`,`color-blind-deuteranope`,`color-blind-tritanope`)
-- Fix so that null text boxes have no bounding boxes when attempting placement ( 162f82cba5b0fb984c425586c6a4b354917abc47 )
-- Patch to add legacy method for setting JPEG quality in images ( #3024 )
-- Added `filter_image` method which can modify an image in place or return a new image that is filtered
-- Added missing typedef's in `mapnik::geometry` to allow experimenting with different containers
+ - Fixed incorrect bundled deps
 
 ## 3.0.2
 
-Released: July 31, 2015
-
-(Packaged from 8305e74)
-
-#### Summary
-
-This release is centered around improvements to the SVG parsing within mapnik. Most work was done in pull request #3003.
-
-- Added container to log SVG parsing errors
-- Reimplemented to use rapidxml for parsing XML (DOM)
-- Support both xml:id and id attributes ( xml:id takes precedence )
-- Added parse_id_from_url using boost::spirit
-- Added error tracking when parsing doubles
-- Unit tests for svg_parser to improve coverage
-- Fixed rx/ry validation for rounded_rect
-- Fixed dimensions parsing
-- Remove libxml2 dependency
+ - Upgraded Nan to v1.3.0
+ - Binaries updated to use Mapnik v3.x (master branch) at 7bc956e and mapnik-packaging@9c7c9de
 
 ## 3.0.1
 
-Released: July 27th, 2015
-
-(Packaged from 28f6f4d)
-
-#### Summary
-
-The 3.0.1 fixes a few bugs in geojson parsing, svg parsing, and rendering. It also avoids a potential hang when using `line-geometry-transform` and includes a speedup for text rendering compared to v3.0.0. It is fully back compatible with v3.0.0 and everyone is encouraged to upgrade.
-
-- Fixed text placement performance after #2949 (#2963)
-- Fixed rendering behavior for `text-minimum-path-length` which regressed in 3.0.0 (#2990)
-- Fixed handling of `xml:id` in SVG parsing (#2989)
-- Fixed handling of out of range `rx` and `ry` in SVG `rect` (#2991)
-- Fixed reporting of envelope from `mapnik::memory_datasource` when new features are added (#2985)
-- Fixed parsing of GeoJSON when unknown properties encountered at `FeatureCollection` level (#2983)
-- Fixed parsing of GeoJSON when properties contained `{}` (#2964)
-- Fixed potential hang due to invalid use of `line-geometry-transform` (6d6cb15)
-- Moved unmaintained plugins out of core: `osm`, `occi`, and `rasterlite` (#2980)
+ - Binaries updated to use Mapnik v3.x (master branch) at 5a1126b
 
 ## 3.0.0
 
-Released: July 7th, 2015
+ - New 3.x series targeting Mapnik 3.x / C++11
+ - Binaries for OS X require >= 10.9
+ - Binaries for Linux require >= Ubuntu 14.04
+ - First release providing binaries for Windows x64
 
-(Packaged from e6891a0)
+Notable changes in binaries:
 
-#### Summary
+ - Built with `-std=c++11` and `-fvisibility=hidden` on OS X and Linux
+ - Built with `-flto` on OS X (link time optimization) and target >= OS X 10.9
+ - Built with Visual Studio 2014 CTP 3 on Windows (runtimes can be installed from https://mapnik.s3.amazonaws.com/dist/dev/VS-2014-runtime/vcredist_x64.exe and https://mapnik.s3.amazonaws.com/dist/dev/VS-2014-runtime/vcredist_x86.exe)
+ - Binaries updated to use Mapnik v3.x (master branch) at f81fc53cbc and mapnik-packaging@6b7345248e
 
-The 3.0 release is a major milestone for Mapnik and includes many performance and design improvements. The is the first release to provide text shaping using the harfbuzz library. This harfbuzz support unlocks improved rendering and layer for many new languages, particularly SE Asian scripts. The internal storage for working with images and geometries has been made more flexible, faster, and strongly typed. The python bindings that were previously bundled with Mapnik have now been moved to <https://github.com/mapnik/python-mapnik> and are versioned independently.
+Notable changes in the Mapnik SDK include:
+ - GDAL updated to 3fdc6e72b6e5cba
+ - Libtiff updated to 14bca0edd83
+ - Upgraded libpng from 1.6.12 -> 1.6.13
 
-#### Notice
+## 1.4.15
 
- - Mapnik 3.0.0 requires a compiler capable of `std=c++11`.
- - It is highly recommended you use the `clang++` compiler on both OS X and Linux since it has robust c++11 support lower memory requirements.
+ - Upgraded to mapnik-vector-tile@0.5.5 for faster raster rendering
 
-##### Major Changes
+## 1.4.14
 
-- Improved support for International Text (now uses harfbuzz library for text shaping)
+ - IMPORTANT: changes to shield placement (see Mapnik SDK notes below)
+ - Added `mapnik.VectorTile.empty()` to check if a vector tile has any features (reports true if tile contains layers without features)
+ - Avoid startup error if $HOME environment is not known
+ - Fixed all tests on windows
+ - Experimental: `mapnik.VectorTile` now accepts `variables` object in render options.
+ - Experimental: Added `mapnik.Map.clone` method to create a shallow copy of a map object (datasources are still shared)
 
-- Uses latest C++11 features for better performance (especially map loading)
+Notable changes in binaries:
 
-- Expressions everywhere: all symbolizer properties can now be data driven expressions (with the exception of `face-name` and `fontset-name` on the `TextSymbolizer`).
+ - Binaries updated to use Mapnik v2.3.x at 5ae55a07e and mapnik-packaging@b923eda6a
+ - Enabled `-DSVG_RENDERER`, libtiff, and webp support for windows binaries
 
-- Rewritten geometry storage based on `std::vector` (#2739)
-  - Separate storage of polygon exterior rings and interior rings to allow for more robust clipping of parts.
-  - Enforces consistent winding order per OGC spec (exterior rings are CCW, interior CW)
-  - Reduced memory consumption for layers with many points
-  - Ability to adapt Mapnik geometries to boost::geometry operations (in a zero-copy way)
-  - Ability to have i/o grammars for json/wkt work on geometries rather than paths for better efficiency and simpler code
+Notable changes in the Mapnik SDK include:
+ - Fixed support for unicode paths names to XML files on Windows
+ - Fixed `avoid-edges:true` support for shields (fixing frequently clipped shields) (https://github.com/mapnik/mapnik/issues/983)
+ - Fixed shield bbox calculation when when `scale_factor` > 1 is used (also a cause of clipped shields) (https://github.com/mapnik/mapnik/issues/2381)
+ - Upgraded boost from 1.55 -> 1.56
+ - Upgraded sqlite from 3.8.5->3.8.6
 
-- Added new and experimental `dot` symbolizer for fast rendering of points
+## 1.4.13
 
-- New functions supported in expressions: `exp`, `sin`, `cos`, `tan`, `atan`, `abs`.
+ - Added `mapnik.Map.aspect_fix_mode` (#177)
 
-- New constants supported in expressions: `PI`, `DEG_TO_RAD`, `RAD_TO_DEG`
+Notable changes in binaries:
 
-- Added support for a variety of different grayscale images:
-  - `mapnik.imageType.null`
-  - `mapnik.imageType.rgba8`
-  - `mapnik.imageType.gray8`
-  - `mapnik.imageType.gray8s`
-  - `mapnik.imageType.gray16`
-  - `mapnik.imageType.gray16s`
-  - `mapnik.imageType.gray32`
-  - `mapnik.imageType.gray32s`
-  - `mapnik.imageType.gray32f`
-  - `mapnik.imageType.gray64`
-  - `mapnik.imageType.gray64s`
-  - `mapnik.imageType.gray64f`
+ - Binaries updated to use Mapnik v2.3.x at d62365c and mapnik-packaging@f012b82e6a
 
-- Pattern symbolizers now support SVG input and applying transformations on them dynamically
+Notable changes in the Mapnik SDK include:
+ - OGR Plugin no longer throws if layer is empty
+ - Added new `aspect_fix_mode` called `RESPECT` that is a no-op
+ - Upgraded harfbuzz from 0.9.32 -> 0.9.35
 
-- Experimental / interface may change: `@variables` can be passed to renderer and evaluated in expressions
+## 1.4.12
 
-- Supports being built with clang++ using `-fvisibility=hidden -flto` for smaller binaries
+ - Fixed broken `postgis.input` plugin in binary package (#286)
+ - New `mapnik.VectorTile.queryMany` method (@rsudekum)
+ - Fixed mismatched new/delete in UTF8 grid encoding code (#278)
+ - Updated to compile against latest Mapnik 3.x development version
+ - Tweaked internal tracker of map concurrent usage to release before callback (should prevent spurious warnings like at mapbox/tilelive-mapnik#83)
+ - Added missing `invert-rgb` compositing option (@mojodna)
 
-- Supports being built with Visual Studio 2014 CTP #3
+Notable changes in binaries:
 
-- Shield icons are now pixel snapped for crisp rendering
+ - Now built with `-DSVG_RENDERER` enabled
+ - Now compiled and linked with `clang++-3.4` on linux instead of `g++`
+ - Now using a versioned binary module directory within `lib/binding/`.
+ - Binaries updated to use Mapnik v2.3.x at a616e9d and mapnik-packaging@a5dbe90c61
 
-- `MarkersSymbolizer` now supports `avoid-edges`, `offset`, `geometry-transform`, `simplify` for `line` placement and two new `placement` options called `vertex-last` and `vertex-first` to place a single marker at the end or beginning of a path. Also `clip` is now respected when rendering markers on a LineString
-geometry.
+Notable changes in the Mapnik SDK include:
+ - Faster font i/o
+ - Fixed support for multi-face font collections (.ttc files)
+ - Fixed `comp-op:color` compositing to preserve luma (@mojodna)
+ - Made `png` format string mean full color png (again) rather than paletted png8
+ - OGR Plugin now accepts optional `extent` parameter (@kernelsanders)
+ - New, experimental `pgraster` plugin (@strk)
+ - Upgraded postgres from 9.3.3 -> 9.3.4
+ - Upgraded harfbuzz from 0.9.29 -> 0.9.32
+ - Upgraded png from 1.6.10 -> 1.6.12
+ - Upgraded pixman from 0.32.4->0.32.6
+ - Removed dependence on fontconfig
 
-- `TextSymbolizer` now supports `smooth`, `simplify`, `halo-opacity`, `halo-comp-op`, and `halo-transform`
+## 1.4.11
 
-- `ShieldSymbolizer` now supports `smooth`, `simplify`, `halo-opacity`, `halo-comp-op`, and `halo-transform`
+ - Never happened (npm shasum for published package was busted)
 
-- The `text-transform` property of `TextSymbolizer` now supports `reverse` value to flip direction of text.
+## 1.4.10
 
-- The `TextSymbolizer` now supports `font-feature-settings` for advanced control over Opentype font rendering (https://developer.mozilla.org/en-US/docs/Web/CSS/font-feature-settings)
+ - Fixed version of bundled node-pre-gyp
 
-- New GroupSymbolizer for applying multiple symbolizers in a single layout
+## 1.4.9
 
-- AGG renderer: fixed geometry offsetting to work after smoothing to produce more consistent results (#2202)
+ - New mapnik.blend function that implements the node-blend API (https://github.com/mapbox/node-blend#usage)
+ - Now supporting node v0.11.x via Nan@1.2.0
+ - Binaries updated to use Mapnik v2.3.x at 7c7da1a2f and mapnik-packaging@1bbd8d560e9
 
-- AGG renderer: increased `vertex_dist_epsilon` to ensure nearly coincident points are discarded more readily (#2196)
+Notable changes in the Mapnik SDK include:
+ - Now building GDAL master (2.x) at https://github.com/OSGeo/gdal/commit/1106e43682056645c8c5e0dbf6ebcb69f8bf23cc
+ - Mapnik image-filters now support correct alpha blending.
+ - Mapnik PNG miniz encoding fixed.
+ - Mapnik can now register fonts from directories containing non-ascii characters on windows.
 
-- GDAL plugin
-  - Now keeps datasets open for the lifetime of the datasource (rather than per featureset)
-  - Added back support for user driven `nodata` on rgb(a) images (#2023)
-  - Allowed nodata to override alpha band if set on rgba images (#2023)
-  - Added `nodata_tolerance` option to set nearby pixels transparent (has similar effect to the `nearblack` program) (#2023)
-  - At process exit Mapnik core no longer calls `dlclose` on gdal.input (#2716)
+## 1.4.8
 
-- TopoJSON plugin
-  - Now supporting optional `bbox` property on layer
-  - Fixed support for reporting correct `feature.id()`
-  - Now supports `inline` string for passing data from memory
-  - Faster parsing via static initialization of grammars
-  - Fix crash on invalid arc index
+ - Never happened (npm shasum for published package was busted)
 
-- GeoJSON plugin
-  - Now supporting optional `bbox` property on layer
-  - Fixed support for reporting correct `feature.id()`
-  - Now supports `inline` string for passing data from memory
-  - Faster parsing via static initialization of grammars
+## 1.4.7
+ - Added `mapnik.Image.compare` function to compare the pixels of two images.
+ - Fixed build issue leading to broken `ogr.input` Mapnik plugin
+ - Auto-registers fonts found in paths via the `MAPNIK_FONT_PATH` environment
+   variable
 
-- SQLite plugin
-  - Fixed support for handling all column types
+## 1.4.6
+ - vtile.parse no longer throws if `vtile` was previously composited but no new data resulted.
+ - Fixed compile problem on some linux/bsd systems
+ - Binaries updated to use Mapnik v2.3.x at g7960be5 and mapnik-packaging@f007d6f1a6
 
-- CSV Plugin
-  - Added the ability to pass an `extent` in options
+Notable changes in the Mapnik SDK include:
+ - GDAL now built `--with-threads=yes`
+ - GDAL dependency now included as a shared library
+ - Now building GDAL master (2.x) at https://github.com/OSGeo/gdal/commit/c0410a07c8b23e65071789a484fca0f3391fe0ff
 
-- PostGIS plugin
-  - Added Async support to  - https://github.com/mapnik/mapnik/wiki/PostGIS-Async
-  - Added support for rendering 3D and 4D geometries (previously silently skipped) (#44)
+## 1.4.5
 
-- Added support for web fonts: `.woff` format (#2113)
+ - Updated to use Mapnik 2.3.x SDK with rapidxml parsing fix: https://github.com/mapnik/mapnik/issues/2253
 
-- Added missing support for `geometry-transform` in `line-pattern` and `polygon-pattern` symbolizers (#2065)
+## 1.4.4
 
-- Dropped support for Sun compiler
+ - Updated to mapnik-vector-tile@0.5.0
+ - Subtle VectorTile.composite bugs fixed to handle both tiles created from `setData` and those just rendered to.
+ - `VectorTile.fromGeoJSON` method changed to `VectorTile.addGeoJSON`
+ - Removed initializing and cleaning up global libxml2 structures because XML2 is no longer the default in node-mapnik binaries (#239)
+ - Added support for pre-pending PATH when set in `mapnik_settings.js` (#258)
+ - Binaries updated to use Mapnik v2.3.x at ed3afe5 and mapnik-packaging@5f9f0e0375
 
-- Upgraded unifont to `unifont-6.3.20131020`
+Notable changes in the Mapnik SDK include:
+ - GDAL now built `--with-threads=no` and with a much more minimal set of drivers (https://github.com/mapnik/mapnik-packaging/commit/c572d73818ee4c9836171ae9fd49e950c6710d58)
+ - Mapnik now build with rapidxml/ptree xml parser rather than libxml2 (meaning no xincludes or entities are supported)
 
-- Fixed crash when rendering to cairo context from python (#2031)
+## 1.4.3
 
-- Moved `label-position-tolerance` from `unsigned` type to `double`
+ - VectorTile constructor now accepts optional 4th arg of options which respects `width` or `height`
+ - `VectorTile.query` now returns `Feature` objects with `layer` and `distance` properties
+ - New `VectorTile.fromGeoJSON` function to turn GeoJSON into a tile layer
+ - New appveyor file for continuous builds on windows
+ - Binaries updated to use Mapnik v2.3.x at 94e78f2ae4 and mapnik-packaging@45536bd3c9
 
-- Added support for more seamless blurring by rendering to a larger internal image to avoid edge effects (#1478)
+Notable changes in the Mapnik SDK include:
+ - Libtiff upgraded to CVS head at https://github.com/vadz/libtiff/commit/f696451cb05a8f33ec477eadcadd10fae9f58c39
+ - Libfiff now built with `--enable-chunky-strip-read`
+ - Harfbuzz updated to v0.9.28
+ - Sqlite upgraded to 3.8.4.3/3080403
 
-- Fixed rendering of large shapes at high zoom levels, which might dissapear due to integer overflow. This
-  bug was previously fixable when geometries were clipped, but would, until now, re-appear if clipping was turned
-  off for a symbolizer (#2000)
+## 1.4.2
 
-- Added single color argument support to `colorize-alpha` to allow colorizing alpha with one color.
+ - Now initializing and cleaning up global libxml2 structures to ensure safe async map loading (#239)
+ - Fix publishing of mapnik package to npm to include bundled node-pre-gyp.
+ - Binaries updated to use Mapnik v2.3.x at ce1ff99 and mapnik-packaging@49d8c3b.
 
-- Added `color-to-alpha` `image-filter` to allow for applying alpha in proportion to color similiarity (#2023)
+Notable changes in Mapnik 2.3.x include:
+ - mapnik line joins are now faster by discarding more nearly coincident points
+ - postgis.input now links to fewer authentication libraries by only linking to libararies libpq was built against
 
-- Fixed alpha handling bug with `comp-op:dst-over` (#1995)
+Notable changes in the Mapnik SDK include:
+ - ICU upgraded to 53.1 from 52.1
+ - jpeg-turbo 1.3.1 is now used in place of libjpeg 8d (better performance likely)
+ - sqlite3 upgraded to 3080401 from 3080200
+ - webp upgraded to 0.4.0 from 0.3.1 (better performance likely)
+ - postgres upgraded to 9.3.3 from 9.3.1
+ - fontconfig upgraded to 2.11.0 from 2.10.0
+ - libpng upgraded to 1.6.10 from 1.6.8
+ - gdal upgraded to git master @ 0c10ddaa71
 
-- Fixed alpha handling bug with building-fill-opacity (#2011)
+## 1.4.1
 
-- Optimized mapnik.Path.to_wkb
+ - Binaries updated to use Mapnik v.2.3.x at 818e87d.
+ - Improved build support for OS X Mavericks by autodetecting if linking against libc++ should be preferred.
+ - `mapnik.register_system_fonts()` now registers opentype fonts as well as truetype fonts on linux (#231)
 
-- Python: added `__geo_interface__` to mapnik.Feature and mapnik.Path (#2009)
+Notable changes in Mapnik 2.3.x include:
+ - a potential double free was fixed in mapnik::projection
+ - postgis plugin error reporting was fixed
+ - postgis plugin !bbox! token replacement was fixed to use max<float> instead of max<double>
 
-- Python: Exposed optimized WKTReader for parsing WKT into geometry paths (6bfbb53)
+## 1.4.0
 
-- Optimized expression evaluation of text by avoiding extra copy (1dd1275)
+ - First series to default to providing binaries with `npm install` (bundling Mapnik v2.3.x at f202197)
 
-- Added Map level `background-image-comp-op` to control the compositing operation used to blend the
-`background-image` onto the `background-color`. Has no meaning if `background-color` or `background-image`
-are not set. (#1966)
+## 1.3.4
 
-- Added Map level `background-image-opacity` to dynamically set the opacity of the `background-image` (#1966)
+ - Made vt.composite reentrant
 
-- Removed `RENDERING_STATS` compile option since it should be replaced with a better solution (#1956)
+## 1.3.3
 
-- Added support to experimental `svg_renderer` for grouping layers for inkscape and illustrator (#1917)
+ - Updated to mapnik-vector-tile@0.4.2
 
-- Fixed compile of python bindings against Python 3.x
+## 1.3.2
 
-- Optimized SVG loading by improving color parsing speed (#1918)
+ - Pinned mapnik-vector-tile dependency to v0.4.1
 
-- Fixed startup problem when fonts cannot be read due to lacking permissions (#1919)
+## 1.3.1
 
-- Fixed bad behavior when negative image dimensions are requested (#1927)
+ - Support for Mapnik 3.x
 
-- Fixed handling of `marker-ignore-placement:true` when `marker-placement:line` (#1931)
+## 1.3.0
 
-- Fixed handling of svg `opacity` in Cairo renderer (#1943)
+ - Updated to mapnik-vector-tile@0.4.0 with more encoding fixes and triggers VT layers without features to no longer be encoded
+ - Every layer in a vector tile that matches a layer in the mapnik.Map is now rendered and not just the first (#213)
+ - Added VectorTile.composite API
+ - Fixed exception handling for `VectorTile.isSolid`
+ - Datasource plugins must now be explicitly registered with `mapnik.register_default_input_plugins`, `mapnik.register_datasource`, or `register_datasources` as all default plugins are no longer automatically registered at startup.
+ - Disabled `mapnik.Expression` object since this is not used by any known applications
+ - Added `mapnik.register_datasource` to register a single datasource plugin.
 
-- Fixed handling of SVG files which contain empty `<g>` (#1944)
+## 1.2.3
 
-- Fixed various 32bit test failures
+ - Upgraded to mapnik-vector-tile@0.3.4 with multipart geometry fixes
+ - Added toWKT/toWKB on mapnik.Feature
+ - Added getPixel/setPixel on mapnik.Image
+ - Added mapnik.VectorTile.query ability - accepts lon/lat in wgs84 and tolerances (in meters) returns array of features
+ - Improvements to node-gyp path resolution in auxiliary Makefile and configure wrapper
+ - Added `mapnik-config --ldflags` to build by default (not just when static linking)
 
-- Fixed compile against icu when by using `U_NAMESPACE_QUALIFIER`
+## 1.2.2
 
-- Fixed missing support for using PathExpression in `marker-file` (#1952)
+ - Fixed windows build against Mapnik 2.3.0
+ - Fixed mapnik.Image.open call - which was string data in invalid way
+ - Upgraded to mapnik-vector-tile@0.3.3
+ - Fixed build on OS X against node v0.6.x (tested v0.6.22)
+ - Deprecated the `Datasource.features()` call #180
 
-- Added support for `line-pattern-offset` (#1991)
+## 1.2.1
 
-- Added support for building on Android (tested with `android-ndk-r9`)
+ - Added more details to `mapnik.supports` API including `grid`,`proj4`,`webp`,`jpeg`,`png`,`svg`,`cairo_pdf`,`cairo_svg`, and `threadsafe`
+ - Added more constants for available `comp-op` values
 
-- Added support for compiling with both -ansi (aka -std=c++98) and -std=c++11
+## 1.2.0
 
-- Added support for compiling and linking on OS X against libc++
+ - Map.render (when rendering to a VectorTile) and VectorTile.render now expect `buffer_size` option to be passed and ignores map.BufferSize (#175)
+ - Removed `devDependencies` so that `mocha` and `sphericalmecator` need to be manually installed to run tests
+ - Tweaked gyp `Release` configuration to ensure binaries are stripped and built with highest level of optimization
+ - Added support for detecting `--runtime_link=static` flag to npm install that can trigger linking against all Mapnik dependencies (not just libmapnik)
+ - Added travis.ci support
 
-- Fixed regression in handling `F` type dbf fields, introduced in v2.2.0.
+## 1.1.3
 
-- Added the ability to create a mapnik Feature from a geojson feature with `mapnik.Feature.from_geojson` in python.
+ - Gyp binding cleanups
+ - Removed direct icu::UnicodString usage to ensure robust compiles against icu build with `-DUSING_ICU_NAMESPACE=0`
+ - Fixed variable shadowing issue in vtile -> geojson code
+ - Disabled default debug symbol generation to speed up builds
 
-- Added to python bindings: `has_tiff`, `has_png`, `has_webp`, `has_proj4`, `has_svg_renderer`, and `has_grid_renderer`
+## 1.1.2
 
-- Made it possible to disable compilation of `grid_renderer` with `./configure GRID_RENDERER=False` (#1962)
+ - Upgraded to mapnik-vector-tile 3.0.x API
 
-- Added `premultiplied` property on mapnik::image_32 / mapnik.Image to enable knowledge of premultiplied status of image buffer.
+## 1.1.1
 
-- Added `webp` image encoding and decoding support (#1955)
+ - Fixed extent of vector::tile_datasource to be sensitive to map buffer (TODO - long term
+   plan is to make extent optional instead of adding support for layer specific buffered extent) - this is needed for avoiding too restrictive filtering of features at render time.
+ - Fixed exception handling when creating geojson from vector tile
+ - Build fixes to support python 3.x
+ - Now accepting `scale_denominator`, `scale`, and `format` in options passed to `map.RenderSync`
 
-- Added `scale-hsla` image-filter that allows scaling colors in HSL color space. RGB is converted to HSL (hue-saturation-lightness) and then each value (and the original alpha value) is stretched based on the specified scaling values. An example syntax is `scale-hsla(0,1,0,1,0,1,0,1)` which means no change because the full range will be kept (0 for lowest, 1 for highest). Other examples are: 1) `scale-hsla(0,0,0,1,0,1,0,1)` which would force all colors to be red in hue in the same way `scale-hsla(1,1,0,1,0,1,0,1)` would, 2) `scale-hsla(0,1,1,1,0,1,0,1)` which would cause all colors to become fully saturated, 3) `scale-hsla(0,1,1,1,0,1,.5,1)` which would force no colors to be any more transparent than half, and 4) `scale-hsla(0,1,1,1,0,1,0,.5)` which would force all colors to be at least half transparent. (#1954)
+## 1.1.0
 
-- The `shapeindex` tool now works correctly with point 3d geometry types
+ - Added support for node v0.11.x
+ - Added async versions of Image methods: `fromBytes`, `open`, `premultiply`, `demultiply`
+ - Added experimental support for rendering vector tiles to SVG. `renderer` option (either `cairo` or `svg`) controls whether `cairo` or native svg renderer is used
+ - Exposed  `map.bufferedExtent` property to access the buffered extent
+ - Changed Image.composite function to accept offsets (`dx` and `dy`), `comp_op`, `image_filters`, and `opacity` in options.
+ - Fixed missing exception translation for MemoryDatasource and Image constructors
+ - Fixed invalid default for `scale` in `map.render`
+ - Implemented mapnik.Image.fromBytes (#147)
 
+## 1.0.0
+ - Dropped support for Mapnik versions older than v2.2.0
+ - Moved build system to node-gyp - now supports node v0.10.x
+ - Fonts are not longer auto-registered. Call `mapnik.register_default_fonts()` to register "DejaVu" set
+   that is often bundled by Mapnik and call `mapnik.register_system_fonts()` to register fonts are various
+   known system paths.
+ - New mapnik.VectorTile API
 
-## 2.2.0
+## 0.7.24
 
-Released June 3rd, 2013
+ - Fixed tests after removal of example code (tests depended on it)
 
-(Packaged from 9231205)
+## 0.7.23
 
-Summary: The 2.2.0 release is primarily a performance and stability release. The code line represents development in the master branch since the release of 2.1.0 in Aug 2012 and therefore includes nearly a year of bug-fixes and optimizations. Nearly 500 new tests have been added bring the total coverage to 925. Shapefile and PostGIS datasources have benefited from numerous stability fixes, 64 bit integer support has been added to support OSM data in the grid renderer and in attribute filtering, and many fixes have landed for higher quality output when using a custom `scale_factor` during rendering. Critical code paths have been optimized include raster rendering, xml map loading, string to number conversion, vector reprojection when using `epsg:4326` and `epsg:3857`, `hextree` encoding, halo rendering, and rendering when using a custom `gamma`. Mapnik 2.2 also compiles faster than previous releases in the 2.x series and drops several unneeded and hard to install dependencies making builds on OS X and Windows easier than any previous release.
+ - Added node v0.10.x support by moving build system from waf to node-gyp
+ - All changes are in build system with only very minor changes to code
+ - Moved example code to https://github.com/mapnik/node-mapnik-sample-code
 
-- Removed 3 dependencies without loosing any functionality: `ltdl`, `cairomm` and `libsigc++` (#1804,#806,#1681)
+## 0.7.22
 
-- Added 64 bit integer support in expressions, feature ids, and the grid_renderer (#1661,#1662,#1662)
+ - Header include refactoring to ensure clean compiles again Mapnik 2.0.x, 2.1.x, and 2.2.x
 
-- Added the ability to disable the need for various dependencies: `proj4`, `libpng`, `libtiff`, `libjpeg`
+## 0.7.21
 
-- Added faster reprojection support between `epsg:3857` and `epsg:4326` (#1705,#1703,#1579)
+ - Fix compile with latest Mapnik 2.2-pre (<limits> header)
+ - Exposed Map.scale() (stefanklug)
+ - More fixes for 64 bit integer support
 
-- Added `colorize-alpha` image filter that applies user provided color gradients based on level of alpha.
-  Accepts one or more colors separated by commas. Each color can be paired with an `offset` value separated
-  by a space that is either `0-100%` or `0.0-1.0`. An `offset` of `0` is implied and the default. For background
-  on where this design came from see http://www.w3.org/TR/SVG/pservers.html#GradientStops. A simple example
-  of colorizing alpha into a "rainbow" is `colorize-alpha(blue,cyan,lightgreen, yellow, orange, red)`. An example of
-  using offsets and the variety of supported color encodings is to produce a ramp which sharp contrast between `blue`
-  and `cyan` is `colorize-alpha(blue 30%, cyan, yellow 0.7 , rgb(0%,80%,0%) 90%)` (#1371).
+## 0.7.20
 
-- Fixed concurrency problem when using cursors in postgis plugin (#1823,#1588)
+ - Fix compile with Mapnik 2.1 (stefanklug)
+ - Support 64 bit integers in grid types in anticipation of mapnik/mapnik#1662
 
-- Fixed postgres connection pool leaks when using `persist_connection=false` (#1764)
+## 0.7.19
 
-- Fixed postgres connection key to respect highest value of `max_size` and `initial_size` for any layer in map (#1599)
+ - Adapts to mapnik master's move to supporting 64 bit integers using `mapnik::value_integer`
 
-- Fixed potential crash in wkb parsing when postgis returns null geometry (#1843)
+## 0.7.18
 
-- Fixed blurry rendering of image and SVG icons (#1316)
+ - Report null values in mapnik features as javascript null rather than undefined
 
-- Added detection of invalid srs values when loading xml (#646)
+## 0.7.17
 
-- Added support for specifying a base_path as a third, optional argument to load_xml
+ - Added sync/async `clear()` method to enable re-use of mapnik.Image and mapnik.Grid
+   objects from a cache
+ - Made ImageView and GridView `isSolid()` methods async if a callback is passed
+ - Made async `isSolid()` return pixel value as second arg
+ - Fixed code examples to work with generic-pool 2.x
+ - Improved error reporting when an invalid image format is requested
+ - Fixed possible edge-case memory corruption when encoding grids whose width != height
 
-- Removed muffling of projection errors while rendering (#646)
+## 0.7.16
 
-- Improved logging system (https://github.com/mapnik/mapnik/wiki/Logging)
+ - Fixed handling of datasource exception when calculating extent
 
-- Added support for reading images from in memory streams (#1805)
+## 0.7.15
 
-- Optimized halo rendering. When halo radius is < 1 new method will be used automatically (#1781)
+2012-10-09
 
-- Added `text-halo-rasterizer` property. Set to `fast` for lower quality but faster
-  halo rendering (#1298) which matched new default method when radius is < 1.
+ - Minor compiler warning fixes
 
-- Added support in `shape`, `sqlite`, `geojson`, and `csv` plugin for handling non-latin characters in the paths to file-based resources (#1177)
+## 0.7.14
 
-- Fixed rendering of markers when their size is greater than the specified `spacing` value (#1487)
+2012-09-16
 
-- Fixed handling of alpha premultiplication in image scaling (#1489)
+ - Keep chasing Mapnik 2.2.0-pre API changes in symbolizers
 
-- Optimized rendering when a style with no symbolizers is encountered (#1517)
+## 0.7.13
 
-- Optimized string handling and type conversion by removing `boost::to_lower`, `boost::trim`, and `boost::lexical_cast` usage (#1687,#1687,#1633)
+2012-09-13
 
-- Optimized alpha preserving `hextree` method for quantization of png images (#1629)
+ - Fixed compile with <= Mapnik 2.1.0
 
-- Faster rendering of rasters by reducing memory allocation of temporary buffers (#1516)
+## 0.7.12
 
-- Fixed some raster reprojection artifacts (#1501)
+2012-09-7
 
-- Fixed raster alignment when width != height and raster is being scaled (#1748,#1622)
+ - Keep chasing Mapnik 2.2.0-pre API changes in singletons
 
-- Added support for caching rasters for re-use during rendering when styling more than once per layer (#1543)
+## 0.7.11
 
-- Improved compile speeds of the code - in some cases by up to 2x and removed need for freetype dependency when building code against mapnik (#1688, #1756)
+2012-09-5
 
-- Removed internal rule cache on `mapnik::Map` c++ object (#1723)
+ - Fixed compile with Mapnik 2.2.0-pre
 
-- Improved the scaled rendering of various map features when using `scale_factor` > 1 (#1280,#1100,#1273,#1792,#1291,#1344,#1279,#1624,#1767,#1766)
+## 0.7.10
 
-- Added C++ api for overriding scale_denominator to enable rendering at fixed scale (#1582)
+2012-08-17
 
-- Added Layer `buffer-size` that can be used to override Map `buffer-size` to avoid
-  over-fetching of data that does not need to be buffered as much as other layers.
-  Map level `buffer-size` will be default if layers do not set the option. Renamed a
-  previously undocumented parameter by the same name that impacted clipping extent and
-  was not needed (clipping padding should likely be a symbolizer level option) (#1566)
+ - Makefile wrapper around node-waf now allows NPROCS option to be set.
+ - Allow configure to work against Mapnik 2.2.0-pre without warning.
 
-- Fixed potential file descriptor leaks in image readers when invalid images were encountered (#1783)
+## 0.7.9
 
-- Fixed alpha handling in the `blur` and `invert` image filters (#1541)
+2012-08-1
 
-- Fixed error reporting in the python plugin (#1422)
+ - Fixed broken usage of V8::AdjustAmountOfExternalAllocatedMemory
+   which could trigger unneeded garbage collection pauses. (@strk)
 
-- Added the ability to run tests without installing with `make test-local`
+## 0.7.8
 
-- Reduced library binary size by adding support for `-fvisibility-inlines-hidden` and `-fvisibility=hidden` (#1826,#1832)
+2012-07-18
 
-- Added `mapnik::map_request` class, a special object to allow passing mutable map objects to renderer (#1737)
+ - Fixed compile against Mapnik 2.0.x
 
-- Added the ability to use `boost::hash` on `mapnik::value` types (#1729)
+## 0.7.7
 
-- Removed obsolete `geos` plugin (functionality replaced by `csv` plugin) and unmaintained `kismet` plugin (#1809,#1833)
+2012-07-13
 
-- Added new `mapnik-config` flags: `--all-flags`, `--defines`, `--git-describe`, `--includes`, `--dep-includes`, `--cxxflags`, `--cxx` (#1443)
+ - remove debug output when locally customized environment settings are
+   pushed into process.env
 
-- Added support for unicode strings as arguments in python bindings (#163)
+## 0.7.6
 
-- Added DebugSymbolizer which is able to render the otherwise invisible collision boxes (#1366)
+2012-07-13
 
-- Optimized rendering by reducing overhead of using `gamma` property (#1174)
+ - Further optimize grid encoding
+ - Allow passing scale_factor to render to file functions  (#109)
+ - Reference count Image and Grid objects in use by View objects to avoid
+   possible scope issues resulting in segfaults when v8 garbage collects
+   (#89, #110)
 
-- Fixed rendering artifacts when using `polygon-gamma` or `line-gamma` equal to 0 (#761,#1763)
+## 0.7.5
 
-- Fixed and optimized the display of excessive precision of some float data in labels (#430,#1697)
+2012-07-12
 
-- Removed the `bind` option for datasources (#1654)
+ - Speed up grid encoding when featuresets are large: 12s -> 4s for
+   processed_p at full zoom
+ - Throw upon errors in grid rendering test
+ - Fix mapnik version check in grid_view pixel value test
+ - Amend expected test failures per version to account for platform
+   differences in whether hidden fonts are around
 
-- Added ability to access style list from map by (name,obj) in python (#1725)
+## 0.7.4
 
-- Added `is_solid` method to python mapnik.Image and mapnik.ImageView classes (#1728)
+2012-07-04
 
-- Changed scale_denominator C++ interface to take scale as first argument rather than map.
+## 0.7.3
 
-- Added support for `background-image` in cairo_renderer (#1724)
+2012-06-29
 
-- Fixed building symbolizer rendering to be fully sensitive to alpha (8b66128c892 / bc8ea1c5a7a)
+## 0.7.2
 
-- `<Filter>[attr]</Filter>` now returns false if attr is an empty string (#1665)
+2012-06-27
 
-- `<Filter>[attr]!=null</Filter>` now returns true if attr is not null (#1642)
+## 0.7.1
 
-- Added support for DBF `Logical` type: #1614
+2012-04-27
 
-- Added serialization of `line-offset` to save_map (#1562)
 
-- Enabled default input plugin directory and fonts path to be set inherited from environment settings in
-  python bindings to make it easier to run tests locally (#1594). New environment settings are:
-    - MAPNIK_INPUT_PLUGINS_DIRECTORY
-    - MAPNIK_FONT_DIRECTORY
+## 0.7.0
+2012-04-16
 
-- Added support for controlling rendering behavior of markers on multi-geometries `marker-multi-policy` (#1555,#1573)
+## 0.6.7
 
-- Added alternative PNG/ZLIB implementation (`miniz`) that can be enabled with `e=miniz` (#1554)
+2012-03-09
 
-- Added support for setting zlib `Z_FIXED` strategy with format string: `png:z=fixed`
+## 0.5.17
 
-- Fixed handling of transparency level option in `octree` png encoding (#1556)
+2012-03-01
 
-- Added ability to pass a pre-created collision detector to the cairo renderer (#1444)
+## 0.5.16
 
-- Tolerance parameter is now supported for querying datasources at a given point (#503/#1499)
+2012-01-23
 
-- Improved detection of newlines in CSV files - now more robust in the face of mixed newline types (#1497)
+## 0.5.15
 
-- Allow style level compositing operations to work outside of featureset extents across tiled requests (#1477)
+2012-01-10
 
-- Support for encoding `literal` postgres types as strings 69fb17cd3/#1466
+## 0.6.5
 
-- Fixed zoom_all behavior when Map maximum-extent is provided. Previously maximum-extent was used outright but
-  now the combined layer extents will be again respected: they will be clipped to the maximum-extent if possible
-  and only when back-projecting fails for all layers will the maximum-extent be used as a fallback (#1473)
+2012-01-10
 
-- Compile time flag called `PLUGIN_LINKING` to allow input datasource plugins to be statically linked with the mapnik library (#249)
+## 0.6.4
 
-- Fixed `dasharray` rendering in cairo backend (#1740)
+2011-12-21
 
-- Fixed handling of `opacity` in svg rendering (#1744)
+## 0.5.14
 
-- Fixed uneven rendering of markers along lines (#1693)
+2011-12-21
 
-- Fixed handling of extra bytes in some shapefile fields (#1605)
+## 0.6.3
 
-- Fixed handling (finally) of null shapes and partially corrupt shapefiles (#1630,#1621)
+2011-12-16
 
-- Added ability to re-use `mapnik::image_32` and `mapnik::grid` by exposing a `clear` method (#1571)
+## 0.5.13
 
-- Added support for writing RGB (no A) png images by using the format string of `png:t=0` (#1559)
+2011-12-16
 
-- Added experimental support for geometry simplification at symbolizer level (#1385)
+## 0.5.12
 
-## Mapnik 2.1.0
+2011-12-06
 
-Released Aug 23, 2012
+## 0.5.11
 
-(Packaged from a25aac8)
+2011-12-06
 
-- Feature-level compositing (comp-op) for all symbolizers (except building) in AGG and Cairo renderers (#1409)
+## 0.6.2
 
-- Style-level compositing (comp-op) (#1409) and style-level opacity for AGG renderer (#314)
+2011-12-06
 
-- New experimental framework for image manipulation called `image-filters` to allow things to be done across entire layer canvas like burring (#1412)
+## 0.6.1
 
-- Support for recoloring stroke, fill, and opacity of SVG files (#1410 / #659)
+2011-11-30
 
-- Support for data-driven transform expressions (#664)
+## 0.5.10
 
-- New support for offsetting geometries / parallel lines in line_symbolizer (#927/#1269)
+2011-11-30
 
-- New support for clipping geometries - now default enabled on all symbolizers (#1116)
+## 0.6.0
 
-- Framework for chainable geometry transformations (called `vertex_converters`) so that you can do things like clip, smooth, and offset at the same time (#927)
+2011-11-19
 
-- WKT parsing now is more robust and supports multi-geometries (#745)
+## 0.5.9
 
-- New support for outputting WKT/WKB/GeoJSON/SVG from mapnik.Geometry objects (#1411)
+2011-11-18
 
-- New experimental python datasource plugin (#1337)
+## 0.5.8
 
-- New experimental geojson datasource plugin using in-memory rtree indexing (#1413)
+2011-10-19
 
-- Cairo rendering is now much more similiar to AGG rendering as cairo backend now supports `scale_factor` (#1280) and other fixed have landed (#1343, #1233, #1344, #1242, #687, #737, #1006, #1071)
+## 0.5.7
 
-- mapnik::Feature objects and datasource plugins now use a `Context` to store attribute schemas to reduce the memory footprint of features (#834)
+2011-10-18
 
-- Added Stroke `miterlimit` (#786)
+## 0.5.6
 
-- Python: exposed Map `background_image` (and aliased `background` to `background_color`)
+2011-10-03
 
-- Python: exposed BuildingSymbolizer
+## 0.5.5
 
-- Support in the CSV plugin for reading JSON encoded geometries (#1392)
+2011-11-30
 
-- Increased grid encoding performance (#1315)
+## 0.5.4
 
-- Added support for setting opacity dynamically on images in polygon pattern and markers symbolizers
+2011-08-23
 
-- Added support for filtering on a features geometry type, either `point`, `linestring`, `polygon`,
-  or `collection` using the expression keyword of `[mapnik::geometry_type]` (#546)
+## 0.5.3
 
-- MarkersSymbolizer width and height moved to expressions (#1102)
+2011-08-04
 
-- PostGIS: Added `simplify_geometries` option - will trigger ST_Simplify on geometries before returning to Mapnik (#1179)
+## 0.5.2
 
-- Improved error feedback for invalid values passed to map.query_point
+2011-08-04
 
-- Fixed rendering of thin svg lines (#1129)
+## 0.5.1
 
-- Improved logging/debugging system with release logs and file redirection (https://github.com/mapnik/mapnik/wiki/Runtime-Logging) (#937 and partially #986, #467)
+2011-08-04
 
-- GDAL: allow setting `nodata` value on the fly (will override value if `nodata` is set in data) (#1161)
+## 0.5.0
 
-- GDAL: respect `nodata` for paletted/colormapped images (#1160)
+2011-08-03
 
-- PostGIS: Added a new option called `autodetect_key_field` (by default false) that if true will
-  trigger autodetection of the table primary key allowing for feature.id() to represent
-  globally unique ids. This option has no effect if the user has not manually supplied the `key_field` option. (#804)
+## 0.4.1
 
-- Cairo: Add full rendering support for markers to match AGG renderer functionality (#1071)
+2011-07-29
 
-- Fix Markers rendering so that ellipse height/width units are pixels (previously were unintentionally radii) (#1134)
+## 0.4.0
 
-- Added `ignore-placement` attribute to markers-symbolizer (#1135)
+2011-06-27
 
-- Removed PointDatasource - use more robust MemoryDatasource instead (#1032)
+## 0.3.1
 
-- SQLite - Added support for !intersects! token in sql subselects (#809) allow custom positioning of rtree spatial filter.
+2011-05-04
 
-- New CSV plugin - reads tabular files - autodetecting geo columns, newlines, and delimiters. Uses in-memory featureset for fast rendering and is not designed for large files (#902)
+## 0.3.0
 
-- Fixed bug in shield line placement when dx/dy are used to shift the label relative to the placement point (Matt Amos) (#908)
+2011-04-29
 
-- Added <layer_by_sql> parameter in OGR plugin to select a layer by SQL query (besides name or index): see http://www.gdal.org/ogr/ogr_sql.html for specifications (kunitoki) (#472)
+## 0.2.13
 
-- Added support for output maps as tiff files (addresses #967 partially)
+2011-03-12
 
-- Added support for justify-alignment=auto. This is the new default. (#1125)
+## 0.2.12
 
-- Added support for grouped rendering using the `group-by` layer option: https://github.com/mapnik/mapnik/wiki/Grouped-rendering
+2011-03-03
 
+## 0.2.11
 
-## Mapnik 2.0.2
+2011-03-01
 
-Released Aug 3, 2012
+## 0.2.10
 
-(Packaged from adb2ec741)
+2011-02-28
 
-- Fixed handling of empty WKB geometries (#1334)
+## 0.2.9
 
-- Fixed naming of `stroke-dashoffset` in save_map (cc3cd5f63f28)
+2011-02-24
 
-- Fixed support for boost 1.50 (8dea5a5fe239233)
+## 0.2.8
 
-- Fixed TextSymbolizer placement in Cairo backend so it respects avoid-edges and minimum-padding across all renderers (#1242)
+2011-02-11
 
-- Fixed ShieldSymbolizer placement so it respects avoid-edges and minimum-padding across all renderers (#1242)
+## 0.2.7
 
-- Rolled back change made in 2.0.1 to marker width/height meaning that Mapnik > 2.0.2 will stick to assuming width/heigh are radii for back compatibility with 2.0.0. The reverted change is seen below as "Fix Markers rendering so that ellipse height/width units are pixels (previously were unintentionally radii)". Issue tracking this is #1163
+2011-02-08
 
-- XML: Fixed to avoid throwing if a `<Parameters>` element is encountered (which is supported in >= 2.1.x)
+## 0.2.6
 
-- Support for PostGIS 2.0 in the pgsql2sqlite command (e69c44e/47e5b3c)
+2011-02-08
 
-- Fixed reference counting of Py_None when returning null attributes from Postgres during UTFGrid encoding, which could cause a Fatal Python error: deallocating None (#1221)
+## 0.2.5
 
-- Fixed possible breakage registering plugins via python if a custom PREFIX or DESTDIR was used (e.g. macports/homebrew) (#1171)
+2011-02-08
 
-- Fixed memory leak in the case of proj >= 4.8 and a projection initialization error (#1173)
+## 0.2.3
 
+2011-01-27
 
-## Mapnik 2.0.1
+## 0.1.2
 
-Released April 10, 2012
+2011-01-27
 
-(Packaged from 57347e9106)
+## 0.1.1
 
-- Support for PostGIS 2.0 (#956,#1083)
+2011-01-27
 
-- Switched back to "libmapnik" and "import mapnik" rather than "mapnik2" (mapnik2 will still work from python) (#941)
+## 0.1.0
 
-- Restored Python 2.5 compatibility (#904)
-
-- Fixed `mapnik-config --version` (#903)
-
-- Cairo: Add full rendering support for markers to match AGG renderer functionality (#1071)
-
-- Fix Markers rendering so that ellipse height/width units are pixels (previously were unintentially radii) (#1134)
-
-- Added `ignore-placement` attribute to markers-symbolizer (#1135)
-
-- Removed svn_revision info from mapnik-config and python bindings as git is now used
-
-- Removed OGCServer from core - now at https://github.com/mapnik/OGCServer (e7f6267)
-
-- Fixed SQLite open stability across platforms/versions (#854)
-
-- Workaround for boost interprocess compile error with recent gcc versions (#950,#1001,#1082)
-
-- Fix possible memory corruption when using `hextree` mode for png color reduction (#1087)
-
-- Fixed bug in shield line placement when dx/dy are used to shift the label relative to the placement point (Matt Amos) (#908)
-
-- Fix to avoid modifying a feature if an attribute is requested that does not exist (0f5ab18ed)
-
-- Fixed ability to save to jpeg format from python (7387afd9) (#896)
-
-
-## Mapnik 2.0.0
-
-Released September 26, 2011
-
-(Packaged from 5b4c20eab3)
-
-- Add minimum-path-length property to text_symbolizer to allow labels to be placed only on lines of a certain length (#865)
-
-- Add support for png quantization using fixed palettes (#843)
-
-- Add AlsoFilter functionality - https://github.com/mapnik/mapnik/wiki/AlsoFilter
-
-- SQLite Plugin: optimize i/o using shared cache and no mutexes (#797)
-
-- Directly link input plugins to libmapnik to avoid having to set dlopen flags from binding languages (#790)
-
-- Throw an error during registration for fonts which Freetype2 does not report a family or style name (r2985).
-
-- Fixed quoting syntax for "table"."attribute" in PostGIS plugin (previously if table aliases were used quoting like "table.attribute" would cause query failure) (r2979).
-
-- Added the ability to control the PostGIS feature id by suppling a key_field to reference and integer attribute name (r2979).
-
-- Added alternative, more robust proj_transform functions to project a bbox using more points than just the four
-  corners to ensure an optimally sized bbox despite proj4 out of bounds conditions. (olt)
-
-- Added map.base parameter that can be set to control where files with relative paths should be interpreted
-  from when a map is loaded from a string or saved to a string. It defaults to an empty string which means
-  that the base path will be the current working directory of the mapnik process. When a stylesheet is read
-  from a file that files directory is used. And a custom value can still be passed as an argument to
-  load_map_from_string().
-
-- Added python function `render_grid` to allow conversion of grid buffer to python object containing list of grid
-  pixels, list of keys, and a and dictionary of feature attributes.
-
-- Added new rendering backend, grid_renderer, that collects the attributes of rendered features and
-  burns their ids into a grid buffer.
-
-- Added optional `maximum-extent` parameter to map object. If set will be used, instead of combined
-  layer extents, for return value of map.zoom_all(). Useful in cases where the combined layer extents
-  cannot possibly be projected into the map srs or the user wishes to control map bounds without
-  modifying the extents of each layer.
-
-- Support for `nodata` values with grey and rgb images in GDAL plugin (#727)
-
-- Print warning if invalid XML property names are used (#110)
-
-- Made XML property names use consistent dashes, never underscores (#644)
-
-- Added support for drawing only first matching rule using filter-mode="first" in Style (#706)
-
-- Added support to PointSymbolizer (`ignore_placement`) for skipping adding placed points to collision detector (#564)
-
-- Added ability to register fonts within XML using Map level `font-directory` parameter (#168)
-
-- TextSymbolizer: Change text_convert to text_transform to better match css naming (r2211)
-
-- Shapefile Plugin: Throw error if attribute name is requested that does not exist (#604)
-
-- Upgraded to the latest proj4 string literal for EPSG:4326 (WGS84) as global default projection (#333)
-
-- Added `mapnik_version_from_string()` function in python bindings to easily convert string representation
-  of version number to the integer format used in `mapnik/version.hpp`. e.g. `0.7.1` --> `701`.
-
-- Added xinclude (http://www.w3.org/TR/xinclude/) support to libxml2-based xml parser (oldtopos) (#567)
-
-- Optimized rendering speeds by avoiding locking in the projection code (r2063) (r2713)
-
-- Added support for setting global alignment of polygon pattern fills (#203)
-
-- Added support for choosing OGR layer by index number using `layer_by_index` parameter (r1904)
-
-- Added support for fractional halo widths (using FT Stroker) (#93)
-
-- Added support for reading jpeg images (in addition to png/tiff) for image symbolizers (#518)
-
-- Made libjpeg dependency optional at compile time and added mapnik2.has_jpeg() method to check for support in python (#545).
-
-- Fixed reading of PostGIS data on Big Endian systems (#515)
-
-- PostGIS: Added better support for alternative schemas (#500)
-
-- AGG Renderer - Enforced default gamma function on all symbolizers to ensure proper antialiasing
-  even when gamma is modified on the PolygonSymbolizer. (#512)
-
-- Added ability to read pre 2.0.0 stylesheets, but prints a warning for deprecated syntax (r1592, #501)
-
-- Rasterlite Plugin: Experimental support for Rasterlite, to practically use sqlite database with wavelet compressed rasters (#469)
-
-- PNG: fixed png256 for large images and some improvements to reduce color corruptions (#522)
-
-- Implement MarkersSymbolizer in Cairo render and improve the markers placement finder. (#553)
-
-
-# Mapnik 0.7.2
-
-Released Oct 18, 2011
-
-(Packaged from bc5cabeb6a)
-
-- Added forward compatibility for Mapnik 2.0 XML syntax (https://github.com/mapnik/mapnik/wiki/Mapnik2/Changes)
-
-- Build fixes to ensure boost_threads are not used unless THREADING=multi build option is used
-
-- Fixes for the clang compiler
-
-- Support for latest libpng (>= 1.5.x) (r2999)
-
-- Fixes to the postgres pool
-
-- Fix for correct transparency levels in png256/png8 output (#540)
-
-- Various build system fixes, especially for gcc compiler on open solaris.
-
-- When plugins are not found, report the searched directories (#568)
-
-- Improved font loading support (#559)
-
-- Fix to shapeindex for allowing indexing of directory of shapefiles like `shapeindex dir/*shp`
-
-- Fixed handling of null and multipatch shapes in shapefile driver - avoiding inf loop (#573)
-
-- Fixed raster alpha blending (#589,#674)
-
-- Enhanced support for faster reprojection if proj >= 4.8 is used (#575)
-
-- Allow for late-binding of datasources (#622)
-
-- Fix to OSM plugin to avoid over-caching of data (#542)
-
-- Various fixes to sqlite, ogr, and occi driver backported from trunk.
-
-- Ensured that `\n` triggers linebreaks in text rendering (#584)
-
-- Support for boost filesystem v3
-
-- Fixes to cairo renderer to avoid missing images (r2526)
-
-- Fixed reading of label_position_tolerance on text_symbolizer and height for building_symbolizer
-
-
-# Mapnik 0.7.1
-
-Released March 23, 2010
-
-(Packaged from r1745/db89f1ca75)
-
-- Rasters: Various fixes and improvements to 8bit png output ([#522](https://github.com/mapnik/mapnik/issues/522),[#475](https://github.com/mapnik/mapnik/issues/475))
-
-- XML: Save map buffer_size when serializing map.
-
-- SCons: Added new build options `PRIORITIZE_LINKING` and `LINK_PRIORITY`. The first is a boolean (default True)
-  of whether to use the new sorting implementation that gives explcit preference to custom or local paths
-  during compile and linking that will affect builds when duplicate libraries and include directories are on the
-  system. LINK_PRIORITY defaults to prioritizing internal sources of the mapnik source folder, then local/user
-  installed libraries over system libraries, but the option can be customized. Sorting not only ensures that
-  compiling and linking will more likely match the desired libraries but also gives more likelyhood to avoid
-  the scenario where libraries are linked that don`t match the includes libmapnik compiled against.
-
-- XML: Fixed behavior of PolygonPatternSymbolizer and LinePatternSymbolizer whereby width, height,
-  and type of images is actually allowed to be optionally ommitted ([#508](https://github.com/mapnik/mapnik/issues/508)). This was added in r1543 but
-  only worked correctly for PointSymbolizer and ShieldSymbolizer.
-
-- Fixed reading of PostGIS data on Big Endian systems ([#515](https://github.com/mapnik/mapnik/issues/515))
-
-- PostGIS: Added better support for alterative schemas ([#500](https://github.com/mapnik/mapnik/issues/500))
-
-- AGG Renderer - Enforced default gamma function on all symbolizers to ensure proper antialiasing
-  even when gamma is modified on the PolygonSymbolizer. ([#512](https://github.com/mapnik/mapnik/issues/512))
-
-- PNG: fixed png256 for large images and some improvements to reduce color corruptions ([#522](https://github.com/mapnik/mapnik/issues/522))
-
-- PNG: Added new quantization method for indexed png format using `hextree` with full support for alpha
-  channel. Also new method has some optimizations for color gradients common when using elevation based
-  rasters. By default old method using `octree` is used. (r1680, r1683, [#477](https://github.com/mapnik/mapnik/issues/477))
-
-- PNG: Added initial support for passing options to png writter like number of colors, transparency
-  support, quantization method and possibly other in future using type parameter. For example
-  "png8:c=128:t=1:m=h" limits palette to 128 colors, uses only binary transparency (0 - none,
-  1 - binary, 2 - full), and new method of quantization using `hextree` (h - `hextree`, o - `octree`).
-  Existing type "png256" can be also written using "png8:c=256:m=o:t=2"  (r1680, r1683, [#477](https://github.com/mapnik/mapnik/issues/477))
-
-
-# Mapnik 0.7.0
-
-Released January, 19 2010
-
-(Packaged from r1574/a0da946be9)
-
-- Core: Fixed linking to external libagg (r1297,r1299)
-
-- Core: Completed full support for PPC (Big endian) architectures (r1352 -> r1357)
-
-- Gdal Plugin: Added support for Gdal overviews, enabling fast loading of > 1GB rasters (#54)
-
-    * Use the gdaladdo utility to add overviews to existing GDAL datasets
-
-- PostGIS: Added an optional `geometry_table` parameter. The `geometry_table` used by Mapnik to look up
-  metadata in the geometry_columns and calculate extents (when the `geometry_field` and `srid` parameters
-  are not supplied). If `geometry_table` is not specified Mapnik will attempt to determine the name of the
-  table to query based on parsing the `table` parameter, which may fail for complex queries with more than
-  one `from` keyword. Using this parameter should allow for existing metadata and table indexes to be used
-  while opening the door to much more complicated subqueries being passed to the `table` parameter without
-  failing (#260, #426).
-
-- PostGIS Plugin: Added optional `geometry_field` and `srid` parameters. If specified these will allow
-  Mapnik to skip several queries to try to determine these values dynamically, and can be helpful to avoid
-  possible query failures during metadata lookup with complex subqueries as discussed in #260 and #436, but
-  also solvable by specifying the `geometry_table` parameter. (r1300,#376)
-
-- PostGIS: Added an optional `extent_from_subquery` parameter that when true (while the `extent` parameter is
-  not provided and `estimate_extent` is false) will direct Mapnik to calculate the extent upon the exact table
-  or sql provided in the `table` parameter. If a sub-select is used for the table parameter then this will,
-  in cases where the subquery limits results, provide a faster and more accurate layer extent. It will have
-  no effect if the `table` parameter is simply an existing table. This parameter is false by default. (#456)
-
-- PostGIS Plugin: Added `!bbox!` token substitution ability in sql query string. This opens the door for various
-  complex queries that may aggregate geometries to be kept fast by allowing proper placement of the bbox
-  query to be used by indexes. (#415)
-
-    * Pass the bbox token inside a subquery like: !bbox!
-
-    * Valid Usages include:
-
-        <Parameter name="table">
-          (Select ST_Union(geom) as geom from table where ST_Intersects(geometry,!bbox!)) as map
-        </Parameter>
-
-        <Parameter name="table">
-          (Select * from table where geom &amp;&amp; !bbox!) as map
-        </Parameter>
-
-- PostGIS Plugin: Added `scale_denominator` substitution ability in sql query string (#415/#465)
-
-    * Pass the scale_denominator token inside a subquery like: !scale_denominator!
-
-    * e.g. (Select * from table where field_value > !scale_denominator!) as map
-
-- PostGIS Plugin: Added support for quoted table names (r1454) (#393)
-
-- PostGIS: Add a `persist_connection` option (default true), that when false will release
-  the idle psql connection after datasource goes out of scope (r1337) (#433,#434)
-
-- PostGIS: Added support for BigInt (int8) postgres type (384)
-
-- PostGIS Plugin: Throw and report errors if SQL execution fails (r1291) (#363, #242)
-
-- PostGIS Plugin: Fixed problem in conversion of long numbers to strings (r1302,1303)
-
-- PostGIS Plugin: Added missing support for BigInt(int8) postgres datatypes (r1250) (#384)
-
-- OGR Plugin: Added support for reading multipoint features (#458)
-
-- Shape Plugin: Fixed bug in file extension stripping (#413)
-
-- Shape Plugin: Fixed missing compiler flags that causes crashing on newer g++ versions (#436)
-
-- PNG: Fixed problem with garbled/striped png256 output along sharp edges(#416,#445,#447,#202)
-
-- PNG: Added support for semi-transparency in png256 output (#477,#202)
-
-- PolygonSymbolizer: Added `gamma` attribute to allow for dilation of polygon edges - a solution
-  to gap artifacts or "ghost lines" between adjacent polygons and allows for slight sharpening of
-  the edges of non overlapping polygons. Accepts any values but 0-1 is the recommended range.
-
-- TextSymbolizer: Large set of new attributes: `text_transform`, `line_spacing`, `character_spacing`,
-  `wrap_character`, `wrap_before`, `horizontal_alignment`, `justify_alignment`, and `opacity`.
-
-    * More details at changesets: r1254 and r1341
-
-- SheildSymbolizer: Added special new attributes: `unlock_image`, `VERTEX` placement, `no_text` and many
-  attributes previously only supported in the TextSymbolizer: `allow_overlap`, `vertical_alignment`,
-  `horizontal_alignment`, `justify_alignment`, `wrap_width`, `wrap_character`, `wrap_before`, `text_transform`,
-  `line_spacing`, `character_spacing`, and `opacity`.
-
-    * More details at changeset r1341
-
-- XML: Added support for using CDATA with libxml2 parser (r1364)
-
-- XML: Fixed memory leak in libxml2 implementation (#473)
-
-- XML: Added function to serialize map to string, called `mapnik.save_map_to_string()` (#396)
-
-- XML: Added parameter to <Map> called `minimum_version` to allow for enforcing the minimum Mapnik version
-  needed for XML features used in the mapfiles. Uses Major.Minor.Point syntax, for example
-  <Map minimum_version="0.6.1"> would throw an error if the user is running Mapnik less than 0.6.1.
-
-- XML: Added support for relative paths when using entities and `mapnik.load_map_from_string()` (#440)
-
-- XML: Made width and height optional for symbolizers using images (r1543)
-
-- XML: Ensured that default values for layers are not serialized in save_map() (r1366)
-
-- XML: Added missing serialization of PointSymbolizer `opacity` and `allow_overlap` attributes (r1358)
-
-- XML: Default text vertical_alignment now dependent on dy (#485, r1527)
-
-- Python: Exposed ability to write to Cairo formats using `mapnik.render_to_file()` and without pycairo (#381)
-
-- Python: Fixed potential crash if pycairo support is enabled but python-cairo module is missing (#392)
-
-- Python: Added `mapnik.has_pycairo()` function to test for pycairo support (r1278) (#284)
-
-- Python: Added `mapnik.register_plugins()` and `mapnik.register_fonts()` functions (r1256)
-
-- Python: Pickling support for point_symbolizer (r1295) (#345)
-
-- Python: Ensured mapnik::config_errors now throw RuntimeError exception instead of UserWarning exception (#442)
-
-- Filters: Added support for `!=` as an alias to `<>` for not-equals filters (avoids &lt;&gt;) (r1326) (#427)
-
-- SCons: Improved boost auto-detection (r1255,r1279)
-
-- SCons: Fixed support for JOBS=N and FAST=True to enable faster compiling (r1440)
-
-- SCons: Ensured that -h or --help will properly print help on custom Mapnik options before a user
-  has been able to properly run `configure`. (r1514)
-
-- SCons: Added ability to link to custom icu library name using ICU_LIB_NAME (r1414)
-
-- SCons: Improved reliability of python linking on OSX (#380)
-
-- Fonts: Added unifont to auto-installed fonts, which is used by the OSM styles as a fallback font (r1328)
-
-
-# Mapnik 0.6.1
-
-Released July 14, 2009
-
-(Packaged from r1247/353ff576c7)
-
-- Plugins: expose list of registered plugins as a `plugin_names()` method of DatasourceCache (r1180)
-
-- XML: Fixed serialization and parsing bugs related to handling of integers and Enums (#328,#353)
-
-- SCons: Added the ability to set the PKG_CONFIG_PATH env setting (#217)
-
-- SCons: Improved linking to only required libraries for libmapnik (#371)
-
-- Shape Plugin: Added compile time flag to allow disabling the use of memory mapped files (r1213) (#342)
-
-- Core: Improved support for PPC (Big endian) architectures (r1198 -> r1213)
-
-- Scons: Improved auto-detection of boost libs/headers (r1200) (#297)
-
-- Plugins: Exposed list of available/registered plugins (r1180) (#246)
-
-- SCons: Improve build support for SunCC (patches from River Tarnell) (r1168, r1169)
-
-- Python: Pickling support for text_symbolizer (r1164) (#345)
-
-- Python: Pickling support for proj_transform and view/coord_transform (r1163) (#345)
-
-- Python: Pickling support for parameters (r1162) (#345)
-
-- Python: Pickling support for stroke objects (r1161) (#345)
-
-- Python: Pickling support for line_symbolizer (r1160) (#345)
-
-- Python: Pickling support for projection objects (r1159) (#345)
-
-- Python: Pickling support for shield_symbolizer (r1158) (#345)
-
-- Python: Pickling support for polygon_symbolizer (r1157) (#345)
-
-- Python: Pickling support for query objects (r1156) (#345)
-
-- Python: Pickling support for pattern symbolizers (r1155) (#345)
-
-- Python: Pickling support for raster_symbolizer (r1154) (#345)
-
-- Python: Added `mapnik.has_cairo()` function to test for cairo support (r1152) (#284)
-
-- Python: Exposed dash_array get method (r1151) (#317)
-
-- Python: Pickling support for Coord objects (#345)
-
-- GDAL Plugin: Added an experimental option to open files in `shared mode` (r1143)
-
-- Python: Exposed RasterSymbolizer options in Python (r1139)
-
-- Plugins: Fixed support for non-file based sources in GDAL and OGR plugins (#336,#337)
-
-- Plugins: Formal inclusion of new plugin for Kismet server (r1127) (#293)
-
-- Python: Made access to features and featuresets more Pythonic (r1121) (#171,#280,#283)
-
-- XML: Ensured relative paths in XML are interpreted relative to XML file location (r1124) (#326)
-
-- XML: Added ability to serialize all default symbolizer values by passing third argument to save_map(m,`file.xml`,True)(r1117) (#327)
-
-- Core: Added support for alpha transparency when writing to png256 (patch from Marcin Rudowski) (#202)
-
-- SCons: Ensured ABI compatibility information is embedded in libmapnik.dylib on Mac OS X (#322)
-
-- SCons: Ensured that the full `install_name` path would be added to libmapnik.dylib on Mac OS X (#374)
-
-- Tests: Added testing framework in Python using nose (r1101-r1105)
-
-- Raster Plugin: Added a tile/bbox-based read policy for large (rasters width * height > 1024*1024 will be loaded in chunks) (r1089)
-
-- OGCServer: Made lxml dependency optional (r1085) (#303)
-
-- Rasters: Handle rounding to allow better alignment of raster layers (r1079) (#295)
-
-- AGG Renderer: Added option to control output JPEG quality (r1078) (#198)
-
-- Plugins: Fixed segfault in OGR Plugin with empty geometries (r1074) (#292)
-
-
-# Mapnik 0.6.0
-
-Released April 1, 2009
-
-(Packaged from r1066/c88e03436f)
-
-- Python: Added support for aspect_fix_mode (r1013)
-
-- OGCServer Fixed axis-ordering for WMS 1.3.0 request (r1051) (#241)
-
-- Plugins: Added option to all plugins to support using a `base` path argument (r1042)
-
-- Symbolizers: RasterSymbolizer now support composing modes for hillshading (r1027)
-
-- SCons: Added options to build the rundemo and pgsql2sqlite tools (r989)
-
-- OGCServer: Added content-length output (r986)
-
-- SCons: Replaced LIBS/INCLUDES options for postgres and gdal with pg_config and gdal-config (r977)
-
-- SCons: Created an optional configure stage (r973)
-
-- Python: Added further pickling/copy support to Map, Layers, Datasources, Styles,and Rules (r907,r913,r921)
-
-- Plugins: Added Sqlite driver for reading sqlite databases (r881)
-
-- Python: Exposed a number of properties for the Text Symbolizer (r869)
-
-- Plugins: PostGIS plugin now accepts multi-line queries (r862)
-
-- Filter parsing: Allow numbers in the filter field name.
-  This allows for shapefiles with columns like `1970`.
-
-- Plugins: Added OGR driver for reading all OGR supported formats (kunitoki) (r836) (#170)
-
-- XML: Added serialization of Fontsets (r807)
-
-- XML: Added support for reading xml from a string (r806)
-
-- C++: renamed mapnik::Color to mapnik::color (r796)
-
-- Python: Made available the scale_denominator property from the map in c++ and python (r794)
-
-- Python: Added ability to resize map and clear all layers and styles from python (r793)
-
-- Python: Exposed Proj to/from transformation for projected coordinate systems (r792,r822) (#117)
-
-- Memory Datasource: Added support for dynamically adding Points to map using Point Datasource (r790)
-
-- XML: Added xml serialization for abstract, title, minzoom, maxzoom, and queryable attributes (r787)
-
-- Core: Transformation is now skipped if srs values match exactly (r777)
-
-- Symbolizers: `min_distance` now honored for POINT placement using Text Symbolizer (r771)
-
-- Plugins: PostGIS plugin now accepts a geometry_field,record_limit, cursor_size options (r769,r872)
-
-- Python: Added ability to transform as a method on Coord and Envelope objects (r764)
-
-- Python: Added docstrings to the Layer object (r763)
-
-- Plugins: Loosened the type checking in Shapefile Plugin dbf reader (r762)
-
-- Fonts: Added support for Right-to-left Hebrew text (r749)
-
-- Core: Added a Map buffer parameter - helps to avoid cut labels at tile edges (r744)
-
-- Symbolizers: Added opacity support to Point Symbolizer (r743)
-
-- Symbolizers: Added support of using Points with Shield Symbolizer (r741)
-
-- Plugins: PostGIS plugin now accepts alternate schemas (r773)
-
-- Core: Added a Map aspect_fix_mode to ensure proper syncing of map dimensions and bbox (r705)
-
-- Fonts: Added support for fallback fonts (r704)
-
-- Cairo: Cairo support exposed in Python (r666)
-
-- Plugins: Added OSM plugin for reading directly from OSM data (r663)
-
-- Filters: Added support for boolean expressions (r660)
-
-- Python: Added ability to open Image32 files (r652)
-
-- Cairo: Cairo rendering support added (r656)
-
-- Core: Added unicode support based on ICU (r650)
-
-- Core: Added support for single and multi threaded variants of Mapnik (r632,r634)
-
-- Plugins: Use memory mapped files for reading shape file (r628)
-
-- Core: Use streams to write images (i/o re-factor) (r628) (#15)
-
-# Mapnik 0.5.1
-
-Released April 15, 2008
-
-(Packaged from c29cb7386d)
-
-# Mapnik 0.5.0
-
-Released April 15, 2008
-
-(Packaged from 0464a3563c)
-
-# Mapnik 0.4.0
-
-Released February 26, 2007
-
-(Packaged from 8d73e3a8dc)
-
-# Mapnik 0.3.0
-
-Released May 22, 2006
-
-(Packaged from 3ae046ebe2)
+2011-01-27
