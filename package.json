@@ -1,7 +1,7 @@
 {
   "name": "mapnik",
   "description": "Tile rendering library for node",
-  "url": "http://github.com/mapnik/node-mapnik",
+  "url": "http://github.com/eslivinski/node-mapnik",
   "homepage": "http://mapnik.org",
   "author": "Dane Springmeyer <dane@mapbox.com> (mapnik.org)",
   "version": "4.5.9",
@@ -16,7 +16,7 @@
   },
   "bugs": {
     "email": "dane@mapbox.com",
-    "url": "http://github.com/mapnik/node-mapnik/issues"
+    "url": "http://github.com/eslivinski/node-mapnik/issues"
   },
   "keywords": [
     "map",
@@ -26,10 +26,6 @@
     "mapnik",
     "carto"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/mapnik/node-mapnik.git"
-  },
   "contributors": [
     "Konstantin Käfer",
     "Blake Thompson"
