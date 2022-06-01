@@ -7,13 +7,6 @@
   "version": "4.5.9",
   "mapnik_version": "e553f55dc",
   "main": "./lib/mapnik.js",
-  "binary": {
-    "module_name": "mapnik",
-    "module_path": "./lib/binding/",
-    "host": "https://mapbox-node-binary.s3.amazonaws.com",
-    "remote_path": "./{name}/v{version}/{configuration}/{toolset}/",
-    "package_name": "{platform}-{arch}.tar.gz"
-  },
   "bugs": {
     "email": "dane@mapbox.com",
     "url": "http://github.com/NBTSolutions/node-mapnik/issues"
